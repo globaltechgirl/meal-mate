@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@layer base {
+  /*  Default (Light) Theme */
+  :root {
+    --black-100: #d9d9d9;
+    --black-200: #1e1e1e80;
+    --black-300: #1e1e1e;
+  }
+}
+
+@theme {
+  --color-black-100: var(--black-100);
+  --color-black-200: var(--black-200);
+  --color-black-300: var(--black-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: white;
+  color: black;
+}
