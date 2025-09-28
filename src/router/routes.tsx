@@ -1,30 +1,55 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import type { RouteObject } from "react-router-dom";
 
 import PrivateLayout from "@/component/layout/privateLayout";
 import Login from "@/pages/auth/login";
+import Create from "@/pages/auth/create";
 import Home from "@/pages/home";
+import Overview from "@/pages/overview";
+import MealCalendar from "@/pages/mealCalendar";
+import Recipes from "@/pages/recipes";
+import ShoppingList from "@/pages/shoppingList";
 import AuthGuard from "@/router/authGuard";
 import { ROUTES } from "@/utils/constants";
 
-const router = createBrowserRouter([
+const routes: RouteObject[] = [
+  {
+    path: ROUTES.ROOT,
+    element: <Navigate to={ROUTES.HOME} replace />,
+  },
+  {
+    path: ROUTES.HOME,
+    element: <Home />,
+  },
+  {
+    path: ROUTES.OVERVIEW,
+    element: <Overview />,
+  },
   {
     path: ROUTES.AUTH.LOGIN,
     element: <Login />,
   },
   {
-    path: "/",
+    path: ROUTES.AUTH.CREATE,
+    element: <Create />,
+  },
+  {
+    path: ROUTES.ROOT,
     element: <AuthGuard />,
     children: [
       {
         element: <PrivateLayout />,
         children: [
-          { path: "", element: <Navigate to="home" replace /> },
-          { path: "home", element: <Home /> },
-          { path: "*", element: <Navigate to={ROUTES.AUTH.LOGIN} replace /> },
+          { path: ROUTES.MEAL_CALENDAR.replace("/", ""), element: <MealCalendar /> },
+          { path: ROUTES.RECIPES.replace("/", ""), element: <Recipes /> },
+          { path: ROUTES.SHOPPING_LIST.replace("/", ""), element: <ShoppingList /> },
+          { path: "*", element: <Navigate to={ROUTES.HOME} replace /> },
         ],
       },
     ],
   },
-]);
+];
+
+const router = createBrowserRouter(routes);
 
 export default router;

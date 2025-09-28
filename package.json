@@ -29,6 +29,7 @@
     "@vitejs/plugin-react-swc": "^4.1.0",
     "axios": "^1.12.2",
     "dayjs": "^1.11.18",
+    "framer-motion": "^12.23.22",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-redux": "^9.2.0",
