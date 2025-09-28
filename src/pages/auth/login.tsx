@@ -1,6 +1,6 @@
 import { Box } from "@mantine/core";
-import Slider from "@/component/login/slider";  
-import LoginForm from "@/component/login/login"; 
+import Slider from "@/component/auth/slider";  
+import LoginForm from "@/component/auth/login"; 
 
 const Login: React.FC = () => {
   return (
