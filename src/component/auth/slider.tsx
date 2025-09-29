@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 import FrameTop from "@/assets/frame-top.svg?react";
 import FrameLogo3 from "@/assets/frame-logo3.svg?react";
-import Frame2 from "@/assets/login-img1.jpg";
-import Frame3 from "@/assets/login-img1.jpg";
+import Frame2 from "@/assets/login-img1.webp";
+import Frame3 from "@/assets/login-img2.webp";
 
 type ContentSlide = {
   type: "content";

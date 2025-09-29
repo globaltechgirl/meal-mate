@@ -215,7 +215,7 @@ const Create: React.FC = () => {
             <Button
               mt={8}
               className="overviewBtn createBtn"
-              onClick={() => navigate("/home")}
+              onClick={() => navigate("/dashboard")}
             >
               Register
             </Button>

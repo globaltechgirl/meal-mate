@@ -176,7 +176,7 @@ const Login: React.FC = () => {
             <Button
               mt={10}
               className="overviewBtn createBtn"
-              onClick={() => navigate("/home")}
+              onClick={() => navigate("/dashboard")}
             >
               Get Started
             </Button>

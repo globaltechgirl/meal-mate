@@ -6,6 +6,7 @@ import Login from "@/pages/auth/login";
 import Create from "@/pages/auth/create";
 import Home from "@/pages/home";
 import Overview from "@/pages/overview";
+import Dashboard from "@/pages/dashboard";
 import MealCalendar from "@/pages/mealCalendar";
 import Recipes from "@/pages/recipes";
 import ShoppingList from "@/pages/shoppingList";
@@ -40,6 +41,7 @@ const routes: RouteObject[] = [
       {
         element: <PrivateLayout />,
         children: [
+          { path: ROUTES.DASHBOARD.replace("/", ""), element: <Dashboard /> },
           { path: ROUTES.MEAL_CALENDAR.replace("/", ""), element: <MealCalendar /> },
           { path: ROUTES.RECIPES.replace("/", ""), element: <Recipes /> },
           { path: ROUTES.SHOPPING_LIST.replace("/", ""), element: <ShoppingList /> },
