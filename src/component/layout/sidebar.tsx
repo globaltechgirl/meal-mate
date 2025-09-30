@@ -40,7 +40,7 @@ const Sidebar: React.FC = () => {
                 alignItems: "flex-start",
                 gap: "10px",
                 textDecoration: "none",
-                fontSize: "10px",
+                fontSize: "9.5px",
                 fontWeight: 400,
                 padding: "7px 12px",
                 borderRadius: "8px",

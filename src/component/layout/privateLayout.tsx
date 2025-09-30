@@ -17,7 +17,7 @@ const PrivateLayout = () => {
         breakpoint: "sm",
         collapsed: { mobile: !opened },
       }}
-      style={{ backgroundColor: "var(--dark-600)" }}
+      style={{ backgroundColor: "var(--dark-10)" }}
     >
       <AppShell.Header hiddenFrom="sm">
         <div className="flex items-center justify-between p-6">
@@ -30,7 +30,7 @@ const PrivateLayout = () => {
         style={{
           borderRight: "none",
           boxShadow: "none",
-          backgroundColor: "var(--dark-600)",
+          backgroundColor: "var(--dark-10)",
           padding: "10px",
         }}
       >
@@ -38,7 +38,7 @@ const PrivateLayout = () => {
           style={{
             height: "100%",
             borderRadius: "8px",
-            backgroundColor: "var(--dark-700)",
+            backgroundColor: "var(--dark-20)",
             border: "0.5px solid var(--border-100)",
             padding: "20px 10px",
           }}
@@ -49,19 +49,12 @@ const PrivateLayout = () => {
 
       <AppShell.Main
         style={{
-          padding: "10px",
+          padding: "10px 0",
           marginLeft: 220,
+          marginRight: "10px",
         }}
       >
-        <Box
-          style={{
-            height: "100%",
-            borderRadius: "8px",
-            backgroundColor: "var(--dark-700)",
-            border: "0.5px solid var(--border-100)",
-            padding: "10px",
-          }}
-        >
+        <Box>
           <Outlet />
         </Box>
       </AppShell.Main>
