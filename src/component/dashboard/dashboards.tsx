@@ -3,6 +3,9 @@ import { Box, Grid, Paper, Text } from "@mantine/core";
 import Info from "@/component/dashboard/info";
 import Classes from "@/component/dashboard/classes";
 import MonthlyRecipes from "@/component/dashboard/monthlyRecipes";
+import WeeklyBest from "@/component/dashboard/weeklyBest";
+import DailyMenu from "./dailyMenu";
+import RecentList from "./recentList";
 
 type CardProps = {
   title: React.ReactNode;
@@ -45,27 +48,52 @@ const Dashboards: React.FC = () => {
         </Grid.Col>
       </Grid>
 
-      {/* 3️⃣ Recipes */}
-      <Grid gutter={10} m={0} style={{ width: "100%" }}>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <MonthlyRecipes />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 3 }}>
-          <Card title="Weekly Self Best Item" />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 3 }}>
-          <Card title="Daily Recipe Menu" />
-        </Grid.Col>
-      </Grid>
+   <Grid gutter={10} m={0} style={{ width: "100%" }}>
+  <Grid.Col
+    span={{ base: 12, md: 6 }}
+    style={{ display: "flex", flexDirection: "column" }}
+  >
+    <Box style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <MonthlyRecipes />
+    </Box>
+  </Grid.Col>
+
+  <Grid.Col
+    span={{ base: 12, md: 3 }}
+    style={{ display: "flex", flexDirection: "column" }}
+  >
+    <Box style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <WeeklyBest />
+    </Box>
+  </Grid.Col>
+
+  <Grid.Col
+    span={{ base: 12, md: 3 }}
+    style={{ display: "flex", flexDirection: "column" }}
+  >
+    <Box style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <DailyMenu />
+    </Box>
+  </Grid.Col>
+</Grid>
+
+
 
       {/* 4️⃣ Shopping */}
       <Grid gutter={10} m={0} style={{ width: "100%" }}>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <Card title="Shopping List" />
+        <Grid.Col span={{ base: 12, md: 9 }}style={{ display: "flex", flexDirection: "column" }}
+  >
+    <Box style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <RecentList />
+    </Box>
         </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <Card title="Shopping Map" />
+         <Grid.Col span={{ base: 12, md: 3 }}style={{ display: "flex", flexDirection: "column" }}
+  >
+    <Box style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <Card title="Shopping Map" />
+    </Box>
         </Grid.Col>
+     
       </Grid>
     </Box>
   );

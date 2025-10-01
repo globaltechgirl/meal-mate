@@ -72,7 +72,7 @@ const styles = {
 
   chartInner: {
     flex: 1,
-    height: "240px",
+    height: "200px",
     position: "relative" as const,
   },
 };

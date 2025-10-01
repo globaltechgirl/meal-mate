@@ -60,13 +60,13 @@ const styles = {
   } as const,
 
   number: {
-    fontSize: "10.5px",
-    fontWeight: 600,
+    fontSize: "9.5px",
+    fontWeight: 450,
     color: "var(--light-100)",
   } as const,
 
   sinceText: {
-    fontSize: "8.5px",
+    fontSize: "8px",
     fontWeight: 400,
     color: "var(--light-200)",
     marginBottom: "10px",
@@ -101,7 +101,7 @@ const ClassCard: FC<ClassCardProps> = ({ icon, title, number, since, data }) => 
           <Box style={styles.iconCircle}>{icon}</Box>
           <Text style={styles.title}>{title}</Text>
         </Box>
-        <Text style={styles.number}>{number}</Text>
+        <Text style={styles.number}>{number} recipes</Text>
         <Text style={styles.sinceText}>Since Yesterday {since}</Text>
       </Box>
 
