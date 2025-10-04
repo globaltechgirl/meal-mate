@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-const PauseCheckIcon = (props: SVGProps<SVGSVGElement>) => (
+const ArrowNextIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={24}
@@ -8,13 +8,14 @@ const PauseCheckIcon = (props: SVGProps<SVGSVGElement>) => (
     viewBox="0 0 24 24"
     {...props}
   >
-    <g className="stop-circle-outline">
+    <g className="arrow-right-outline">
       <g fill="currentColor" fill-rule="evenodd" className="Vector" clip-rule="evenodd">
         <path d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-10 8a8 8 0 1 0 0-16a8 8 0 0 0 0 16"/>
-        <path d="M10 7.5h4a2.5 2.5 0 0 1 2.5 2.5v4a2.5 2.5 0 0 1-2.5 2.5h-4A2.5 2.5 0 0 1 7.5 14v-4A2.5 2.5 0 0 1 10 7.5m0 2a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5z"/>
+        <path d="M17 12a1 1 0 0 1-1 1H8a1 1 0 1 1 0-2h8a1 1 0 0 1 1 1"/>
+        <path d="M16.707 11.293a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L14.586 12l-2.293-2.293a1 1 0 0 1 1.414-1.414z"/>
       </g>
     </g>
   </svg>
 );
 
-export default PauseCheckIcon;
+export default ArrowNextIcon;

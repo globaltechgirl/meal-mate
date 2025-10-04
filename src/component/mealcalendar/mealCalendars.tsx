@@ -1,7 +1,7 @@
 import { Box, Grid, Paper, Text } from "@mantine/core";
 
 import Info from "@/component/layout/info";
-import MainList from "./mainList";
+import MealViews from "./mealViews";
 
 type CardProps = {
   title: React.ReactNode;
@@ -23,7 +23,7 @@ const Card: React.FC<CardProps> = ({ title }) => (
   </Paper>
 );
 
-const ShoppingLists: React.FC = () => (
+const MealCalendars: React.FC = () => (
   <Box style={{ display: "flex", flexDirection: "column", gap: 10 }}>
     <Grid gutter={10} m={0}>
       <Grid.Col span={12}>
@@ -33,10 +33,10 @@ const ShoppingLists: React.FC = () => (
 
     <Grid gutter={10} m={0}>
       <Grid.Col span={12}>
-        <Card title={<MainList />} />
+        <Card title={<MealViews />} />
       </Grid.Col>
     </Grid>
   </Box>
 );
 
-export default ShoppingLists;
+export default MealCalendars;

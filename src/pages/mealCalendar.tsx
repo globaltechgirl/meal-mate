@@ -1,5 +1,9 @@
-export default function MealCalendar() {
+import MealCalendars from "@/component/mealcalendar/mealCalendars";
+
+const MealCalendar = () => {
   return (
-    <h1>MealCalendar Page</h1>
+    <MealCalendars />
   );
 }
+
+export default MealCalendar;

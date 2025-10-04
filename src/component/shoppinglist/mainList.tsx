@@ -7,7 +7,7 @@ import CheckIcon from "@/assets/icons/check";
 import UncheckIcon from "@/assets/icons/uncheck";
 import MenuIcon from "@/assets/icons/menu";
 import MoneyIcon from "@/assets/icons/money";
-import PauseCheckIcon from "@/assets/icons/pausecheck";
+import PauseIcon from "@/assets/icons/pause";
 
 type StatusFilter = "All" | "Pending" | "Complete";
 type AmountView = "Pending" | "Complete";
@@ -129,7 +129,7 @@ const styles: Record<string, CSSProperties> = {
   statusText: {
     padding: "3px 6px",
     width: "fit-content",
-    borderRadius: 6,
+    borderRadius: 5,
     backgroundColor: "var(--dark-10)",
     fontSize: 8.5,
     fontWeight: 400,
@@ -327,7 +327,7 @@ const MainList: FC = () => {
         <Box style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <Box style={styles.filterBox} onClick={toggleAmountView}>
             {currencySymbol}
-            <Text style={{ fontSize: 8.5, fontWeight: 500, color: "var(--light-100)", marginLeft: 0.5, display: "flex", alignItems: "center", gap: 4 }}>
+            <Text style={{ fontSize: 8.5, fontWeight: 450, color: "var(--light-100)", marginLeft: 0.5, display: "flex", alignItems: "center", gap: 4 }}>
               {displayedAmount.toFixed(2)}
               <span style={{ fontSize: 7.5, color: "var(--light-300)" }}>({amountView})</span>
             </Text>
@@ -364,7 +364,7 @@ const MainList: FC = () => {
             ) : statusFilter === "Pending" ? (
               <UncheckIcon width={12} height={12} />
             ) : (
-              <PauseCheckIcon width={12} height={12} />
+              <PauseIcon width={12} height={12} />
             )}
           </Box>
 
