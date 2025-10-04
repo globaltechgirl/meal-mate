@@ -1,5 +1,9 @@
-export default function ShoppingList() {
+import ShoppingLists from "@/component/shoppinglist/shoppingLists";
+
+const ShoppingList = () => {
   return (
-    <h1>ShoppingList Page</h1>
+    <ShoppingLists />
   );
 }
+
+export default ShoppingList;

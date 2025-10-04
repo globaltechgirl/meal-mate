@@ -18,7 +18,7 @@ const styles = {
 
   text: {
     fontSize: "10px",
-    fontWeight: 400,
+    fontWeight: 450,
     color: "var(--light-100)",
   } as React.CSSProperties,
 
@@ -34,8 +34,8 @@ const styles = {
     background: "var(--dark-30)",
     border: "1px solid var(--dark-10)",
     borderRadius: "6px",
-    height: "28px",
-    padding: "0 8px",
+    height: "24px",
+    padding: "0 8px 1px 8px",
   } as React.CSSProperties,
 
   searchInput: {
@@ -79,7 +79,7 @@ const Info: FC = () => {
   };
 
   return (
-    <Box style={styles.infoBar}>
+    <Box p="lg" style={styles.infoBar}>
       <Text style={styles.text}>
         Tolani Bajo. Welcome back to Meal Mate!
       </Text>
