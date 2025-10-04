@@ -1,5 +1,13 @@
 import { Box, Text, Popover } from "@mantine/core";
-import { useRef, useImperativeHandle, forwardRef, type CSSProperties, memo } from "react";
+import {
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  useState,
+  type CSSProperties,
+  memo,
+  type FC,
+} from "react";
 
 import AddIcon from "@/assets/icons/add";
 import BoxIcon from "@/assets/icons/box";
@@ -15,6 +23,7 @@ import BestImg5 from "@/assets/best-img5.jpg";
 export interface BoardViewHandle {
   scrollLeft: () => void;
   scrollRight: () => void;
+  getScrollInfo: () => { scrollLeft: number; maxScrollLeft: number };
 }
 
 interface BoardViewProps {
@@ -135,6 +144,7 @@ const styles: Record<string, CSSProperties> = {
   mealCard: {
     backgroundColor: "var(--dark-20)",
     borderRadius: 8,
+    border: "1px solid var(--dark-10)",
     padding: 8,
     display: "flex",
     flexDirection: "column",
@@ -147,13 +157,20 @@ const styles: Record<string, CSSProperties> = {
   },
   statusBox: {
     padding: "2px 6px",
-    width: "fit-content",
     borderRadius: 5,
     backgroundColor: "var(--dark-30)",
     fontSize: 8.5,
     fontWeight: 400,
     color: "var(--light-200)",
     textAlign: "center",
+    cursor: "pointer",
+  },
+  mealImage: { 
+    width: "100%",
+    height: 80, 
+    borderRadius: 6,
+    border: "2px solid var(--dark-30)", 
+    objectFit: "cover" 
   },
   mealInfo: { 
     display: "flex", 
@@ -169,13 +186,6 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 8, 
     fontWeight: 450, 
     color: "var(--light-100)" 
-  },
-  mealImage: { 
-    width: "100%", 
-    height: 80, 
-    borderRadius: 6, 
-    border: "2px solid var(--dark-30)", 
-    objectFit: "cover" 
   },
   tagText: { 
     fontSize: 8.5, 
@@ -207,18 +217,97 @@ const PopoverItem = memo(({ label, onClick }: { label: string; onClick: () => vo
   </Box>
 ));
 
+interface MealCardProps {
+  meal: MealItem;
+  day: string;
+  toggleStatus: (day: string, mealId: number) => void;
+}
+
+const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus }) => (
+  <Box style={styles.mealCard}>
+    <Box style={styles.mealTop}>
+      <Box style={{ display: "flex", gap: 4 }}>
+        <Box style={styles.statusBox} onClick={() => toggleStatus(day, meal.id)}>
+          {meal.status}
+        </Box>
+        <Box style={styles.statusBox}>{meal.type}</Box>
+      </Box>
+
+      <Popover width={100} position="bottom" shadow="md">
+        <Popover.Target>
+          <Box style={{ cursor: "pointer" }}>
+            <MenuIcon width={10} height={10} />
+          </Box>
+        </Popover.Target>
+        <Popover.Dropdown
+          style={{
+            width: 60,
+            padding: 2,
+            backgroundColor: "var(--dark-30)",
+            border: "1px solid var(--dark-10)",
+            borderRadius: 6,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            marginLeft: "-20px",
+            marginTop: "-2px",
+          }}
+        >
+          <PopoverItem label="Edit" onClick={() => console.log("Edit", meal.id)} />
+          <PopoverItem label="Delete" onClick={() => console.log("Delete", meal.id)} />
+        </Popover.Dropdown>
+      </Popover>
+    </Box>
+
+    <img src={meal.image} alt={meal.name} style={styles.mealImage} />
+
+    <Box style={styles.mealInfo}>
+      <Text style={styles.mealName}>{meal.name}</Text>
+      <Text style={styles.mealNote}>{meal.note.length > 80 ? `${meal.note.slice(0, 80)}...` : meal.note}</Text>
+      <Box style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <TagIcon width={10} height={10} />
+        <Text style={styles.tagText}>{meal.recipesCount} recipes</Text>
+      </Box>
+    </Box>
+  </Box>
+);
+
 const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
   ({ statusFilter = "All", mealTypeFilter = "All" }, ref) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const [columns, setColumns] = useState<Column[]>(initialColumns);
 
     useImperativeHandle(ref, () => ({
       scrollLeft: () => wrapperRef.current?.scrollBy({ left: -300, behavior: "smooth" }),
       scrollRight: () => wrapperRef.current?.scrollBy({ left: 300, behavior: "smooth" }),
+      getScrollInfo: () => {
+        if (!wrapperRef.current) return { scrollLeft: 0, maxScrollLeft: 0 };
+        const scrollLeft = wrapperRef.current.scrollLeft;
+        const maxScrollLeft = wrapperRef.current.scrollWidth - wrapperRef.current.clientWidth;
+        return { scrollLeft, maxScrollLeft };
+      },
     }));
+
+    const toggleMealStatus = (day: string, mealId: number) => {
+      setColumns((prev) =>
+        prev.map((col) =>
+          col.day === day
+            ? {
+                ...col,
+                meals: col.meals.map((meal) =>
+                  meal.id === mealId
+                    ? { ...meal, status: meal.status === "Planned" ? "Completed" : "Planned" }
+                    : meal
+                ),
+              }
+            : col
+        )
+      );
+    };
 
     return (
       <Box ref={wrapperRef} style={styles.wrapper}>
-        {initialColumns.map((col) => (
+        {columns.map((col) => (
           <Box key={col.day} style={styles.column}>
             <Box style={styles.columnHeader}>
               <Box style={styles.headerLeft}>
@@ -237,51 +326,7 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
                   : mealStatusOrder[a.status] - mealStatusOrder[b.status]
               )
               .map((meal) => (
-                <Box key={meal.id} style={styles.mealCard}>
-                  <Box style={styles.mealTop}>
-                    <Box style={{ display: "flex", gap: 4 }}>
-                      <Box style={styles.statusBox}>{meal.status}</Box>
-                      <Box style={styles.statusBox}>{meal.type}</Box>
-                    </Box>
-                    <Popover width={100} position="bottom" shadow="md">
-                      <Popover.Target>
-                        <Box style={{ cursor: "pointer" }}>
-                          <MenuIcon width={10} height={10} />
-                        </Box>
-                      </Popover.Target>
-                      <Popover.Dropdown
-                        style={{
-                          width: 60,
-                          padding: 2,
-                          backgroundColor: "var(--dark-30)",
-                          border: "1px solid var(--dark-10)",
-                          borderRadius: 6,
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                          marginLeft: "-20px",
-                          marginTop: "-2px",
-                        }}
-                      >
-                        <PopoverItem label="Edit" onClick={() => console.log("Edit", meal.id)} />
-                        <PopoverItem label="Delete" onClick={() => console.log("Delete", meal.id)} />
-                      </Popover.Dropdown>
-                    </Popover>
-                  </Box>
-
-                  <img src={meal.image} alt={meal.name} style={styles.mealImage} />
-
-                  <Box style={styles.mealInfo}>
-                    <Text style={styles.mealName}>{meal.name}</Text>
-                    <Text style={styles.mealNote}>
-                      {meal.note.length > 80 ? `${meal.note.slice(0, 80)}...` : meal.note}
-                    </Text>
-                    <Box style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                      <TagIcon width={10} height={10} />
-                      <Text style={styles.tagText}>{meal.recipesCount} recipes</Text>
-                    </Box>
-                  </Box>
-                </Box>
+                <MealCard key={meal.id} meal={meal} day={col.day} toggleStatus={toggleMealStatus} />
               ))}
           </Box>
         ))}

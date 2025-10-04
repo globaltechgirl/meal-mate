@@ -2,7 +2,7 @@ import { Box, Text } from "@mantine/core";
 import { useState, useCallback, useRef, type FC, type CSSProperties } from "react";
 
 import BoardView, { type BoardViewHandle } from "./boardView";
-import CalendarView from "./mealCalendars";
+import CalendarView from "./calendarView";
 
 import BoardIcon from "@/assets/icons/board";
 import ResetIcon from "@/assets/icons/reset";
@@ -100,11 +100,20 @@ const MealViews: FC = () => {
   const handleArrowClick = useCallback(() => {
     if (!boardRef.current) return;
 
-    if (arrowState === "Prev") boardRef.current.scrollLeft();
-    else boardRef.current.scrollRight();
+    const { scrollLeft, maxScrollLeft } = boardRef.current.getScrollInfo();
+    const scrollAmount = 300;
 
-    setArrowState((prev) => (prev === "Prev" ? "Next" : "Prev"));
+    if (arrowState === "Prev") {
+        const newScrollLeft = Math.max(scrollLeft - scrollAmount, 0);
+        boardRef.current.scrollLeft();
+        if (newScrollLeft === 0) setArrowState("Next"); 
+    } else {
+        const newScrollLeft = Math.min(scrollLeft + scrollAmount, maxScrollLeft);
+        boardRef.current.scrollRight();
+        if (newScrollLeft === maxScrollLeft) setArrowState("Prev"); 
+    }
   }, [arrowState]);
+
 
   const resetFilters = useCallback(() => {
     setViewMode("Board");
