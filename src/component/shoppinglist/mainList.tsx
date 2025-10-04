@@ -340,7 +340,7 @@ const MainList: FC = () => {
                 <Text style={{ marginLeft: 4, fontSize: 8.5, fontWeight: 450, color: "var(--light-100)" }}>{dateFilter}</Text>
               </Box>
             </Popover.Target>
-            <Popover.Dropdown style={{ width: 80, padding: 2, backgroundColor: "var(--dark-30)", border: "1px solid var(--dark-10)", borderRadius: 6, marginTop: -4 }}>
+            <Popover.Dropdown style={{ width: 80, padding: 2, backgroundColor: "var(--dark-30)", border: "1px solid var(--dark-10)", borderRadius: 6, marginTop: -4, display: "flex", flexDirection: "column", gap: "2px" }}>
               {dateOptions.map((item) => (
                 <Box
                   key={item}
@@ -419,7 +419,7 @@ const MainList: FC = () => {
                     <MenuIcon width={10} height={10} />
                   </Box>
                 </Popover.Target>
-                <Popover.Dropdown style={{ width: 60, padding: 2, backgroundColor: "var(--dark-30)", border: "1px solid var(--dark-10)", borderRadius: 6, marginLeft: -10, marginTop: -6 }}>
+                <Popover.Dropdown style={{ width: 60, padding: 2, backgroundColor: "var(--dark-30)", border: "1px solid var(--dark-10)", borderRadius: 6, marginLeft: -10, marginTop: -6, display: "flex", flexDirection: "column", gap: "2px" }}>
                   <PopoverItem label="Edit" onClick={() => setRowPopoverOpenIndex(null)} />
                   <PopoverItem label="Delete" onClick={() => { console.log("Delete clicked", idx); setRowPopoverOpenIndex(null); }} />
                 </Popover.Dropdown>
