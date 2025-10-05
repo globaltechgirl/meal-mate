@@ -18,6 +18,7 @@ export const ROUTES = {
   MEAL_CALENDAR: "/meal-calendar",
   RECIPES: "/recipes",
   SHOPPING_LIST: "/shopping-list",
+  RECIPES_DETAILS: "/recipes-details",
 } as const;
 
 export const NAV_LINKS = [

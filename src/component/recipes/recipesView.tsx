@@ -174,7 +174,7 @@ const RecipesView: FC<RecipesViewProps> = ({ page, category, starState, onTotalP
   const [starred, setStarred] = useState<number[]>([]);
   const navigate = useNavigate();
 
-  const handleNavigate = useCallback(() => navigate("/shopping-list"), [navigate]);
+  const handleNavigate = useCallback(() => navigate("/recipes-details"), [navigate]);
   const toggleStar = useCallback((id: number) => setStarred((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])), []);
 
   const filtered = useMemo(
@@ -221,13 +221,13 @@ const RecipesView: FC<RecipesViewProps> = ({ page, category, starState, onTotalP
               </Popover.Dropdown>
             </Popover>
 
-            <Box style={styles.recipeContent} onClick={handleNavigate}>
+            <Box style={styles.recipeContent}>
               {meal.category && <Box style={styles.categoryBadge}>{meal.category}</Box>}
               <Box style={styles.recipeText}>
                 <Text style={styles.recipeName}>{meal.name}</Text>
                 <Text style={styles.recipeNote}>{meal.note.length > 60 ? `${meal.note.slice(0, 60)}...` : meal.note}</Text>
               </Box>
-              <Text style={styles.detailsLink}>View details</Text>
+              <Text style={styles.detailsLink} onClick={handleNavigate}>View details</Text>
             </Box>
           </Box>
         </Box>

@@ -12,6 +12,7 @@ import Recipes from "@/pages/recipes";
 import ShoppingList from "@/pages/shoppingList";
 import AuthGuard from "@/router/authGuard";
 import { ROUTES } from "@/utils/constants";
+import RecipesDetails from "@/pages/recipesDetails";
 
 const routes: RouteObject[] = [
   {
@@ -45,6 +46,7 @@ const routes: RouteObject[] = [
           { path: ROUTES.MEAL_CALENDAR.replace("/", ""), element: <MealCalendar /> },
           { path: ROUTES.RECIPES.replace("/", ""), element: <Recipes /> },
           { path: ROUTES.SHOPPING_LIST.replace("/", ""), element: <ShoppingList /> },
+          { path: ROUTES.RECIPES_DETAILS.replace("/", ""), element: <RecipesDetails /> },
           { path: "*", element: <Navigate to={ROUTES.HOME} replace /> },
         ],
       },
