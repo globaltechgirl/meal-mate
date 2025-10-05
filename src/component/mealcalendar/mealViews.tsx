@@ -1,5 +1,5 @@
 import { Box, Text } from "@mantine/core";
-import { useState, useCallback, useRef, type FC, type CSSProperties } from "react";
+import { useState, useRef, useCallback, type FC, type CSSProperties } from "react";
 
 import BoardView, { type BoardViewHandle } from "./boardView";
 import CalendarView from "./calendarView";
@@ -66,83 +66,120 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 450,
     color: "var(--light-100)",
   },
+  headerActions: {
+    display: "flex",
+    gap: 8,
+    alignItems: "center",
+  },
 };
 
+const STATUS_CYCLE: StatusFilter[] = ["All", "Planned", "Completed"];
+const MEAL_TYPE_CYCLE: MealTypeView[] = ["All", "Breakfast", "Lunch", "Dinner"];
+
 const MealViews: FC = () => {
+  const today = new Date();
+
   const [viewMode, setViewMode] = useState<ViewMode>("Board");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [arrowState, setArrowState] = useState<ArrowState>("Prev");
   const [mealTypeView, setMealTypeView] = useState<MealTypeView>("All");
 
+  const [currentYear, setCurrentYear] = useState<number>(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth());
+
   const boardRef = useRef<BoardViewHandle>(null);
 
-  const statusCycle: StatusFilter[] = ["All", "Planned", "Completed"];
-  const mealTypeCycle: MealTypeView[] = ["All", "Breakfast", "Lunch", "Dinner"];
+  const toggleStatusFilter = () => {
+    setStatusFilter(prev => STATUS_CYCLE[(STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length]);
+  };
 
-  const toggleStatusFilter = useCallback(() => {
-    setStatusFilter((prev) => {
-      const nextIndex = (statusCycle.indexOf(prev) + 1) % statusCycle.length;
-      return statusCycle[nextIndex];
-    });
-  }, []);
+  const toggleMealTypeOrMonth = () => {
+    if (viewMode === "Calendar") {
+      if (currentMonth === 11) {
+        setCurrentMonth(0);
+        setCurrentYear(prev => prev + 1);
+      } else {
+        setCurrentMonth(prev => prev + 1);
+      }
+    } else {
+      setMealTypeView(
+        prev => MEAL_TYPE_CYCLE[(MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length]
+      );
+    }
+  };
 
-  const toggleMealTypeView = useCallback(() => {
-    setMealTypeView((prev) => {
-      const nextIndex = (mealTypeCycle.indexOf(prev) + 1) % mealTypeCycle.length;
-      return mealTypeCycle[nextIndex];
-    });
-  }, []);
+  const toggleViewMode = () => {
+    setViewMode(prev => (prev === "Board" ? "Calendar" : "Board"));
+  };
 
-  const toggleViewMode = useCallback(() => {
-    setViewMode((prev) => (prev === "Board" ? "Calendar" : "Board"));
-  }, []);
-
-  const handleArrowClick = useCallback(() => {
+  const handleBoardArrowClick = useCallback(() => {
     if (!boardRef.current) return;
-
     const { scrollLeft, maxScrollLeft } = boardRef.current.getScrollInfo();
-    const scrollAmount = 300;
 
     if (arrowState === "Prev") {
-        const newScrollLeft = Math.max(scrollLeft - scrollAmount, 0);
-        boardRef.current.scrollLeft();
-        if (newScrollLeft === 0) setArrowState("Next"); 
+      boardRef.current.scrollRight();
+      if (scrollLeft + 300 >= maxScrollLeft) {
+        setArrowState("Next");
+      }
     } else {
-        const newScrollLeft = Math.min(scrollLeft + scrollAmount, maxScrollLeft);
-        boardRef.current.scrollRight();
-        if (newScrollLeft === maxScrollLeft) setArrowState("Prev"); 
+      boardRef.current.scrollLeft();
+      if (scrollLeft <= 0) {
+        setArrowState("Prev");
+      }
     }
   }, [arrowState]);
 
+  const goPrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(prev => prev - 1);
+    } else {
+      setCurrentMonth(prev => prev - 1);
+    }
+  };
 
-  const resetFilters = useCallback(() => {
-    setViewMode("Board");
-    setStatusFilter("All");
-    setArrowState("Prev");
-    setMealTypeView("All");
-  }, []);
+  const goNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(prev => prev + 1);
+    } else {
+      setCurrentMonth(prev => prev + 1);
+    }
+  };
 
-  const renderArrowIcon = useCallback(() => {
-    return arrowState === "Prev" ? (
-      <ArrowPrevIcon width={12} height={12} />
-    ) : (
-      <ArrowNextIcon width={12} height={12} />
-    );
-  }, [arrowState]);
+  const resetFilters = () => {
+    if (viewMode === "Board") {
+      setStatusFilter("All");
+      setArrowState("Prev");
+      setMealTypeView("All");
+    } else {
+      setStatusFilter("All");
+      setCurrentYear(today.getFullYear());
+      setCurrentMonth(today.getMonth());
+    }
+  };
+
+  const renderBoardArrowIcon = arrowState === "Prev" 
+    ? <ArrowNextIcon width={12} height={12} /> 
+    : <ArrowPrevIcon width={12} height={12} />;
 
   return (
     <Box p={3} style={styles.wrapper}>
       <Box style={styles.header}>
         <Text style={styles.headerText}>Meal Calendar</Text>
-        <Box style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <Box style={styles.headerActions}>
           <Box style={styles.filterBox} onClick={toggleViewMode}>
             <BoardIcon width={10} height={10} color="var(--light-100)" />
             <Text style={styles.filterText}>{viewMode} View</Text>
           </Box>
 
-          <Box style={styles.filterBox} onClick={toggleMealTypeView}>
+          <Box style={styles.filterBox} onClick={toggleMealTypeOrMonth}>
             <ClockIcon width={10} height={10} color="var(--light-100)" />
-            <Text style={styles.filterText}>{mealTypeView}</Text>
+            <Text style={styles.filterText}>
+              {viewMode === "Calendar"
+                ? `${currentYear} - ${currentMonth + 1}`
+                : mealTypeView}
+            </Text>
           </Box>
 
           <Box style={styles.iconCircle} onClick={toggleStatusFilter}>
@@ -155,9 +192,20 @@ const MealViews: FC = () => {
             )}
           </Box>
 
-          <Box style={styles.iconCircle} onClick={handleArrowClick}>
-            {renderArrowIcon()}
-          </Box>
+          {viewMode === "Calendar" ? (
+            <>
+              <Box style={styles.iconCircle} onClick={goPrevMonth}>
+                <ArrowPrevIcon width={12} height={12} />
+              </Box>
+              <Box style={styles.iconCircle} onClick={goNextMonth}>
+                <ArrowNextIcon width={12} height={12} />
+              </Box>
+            </>
+          ) : (
+            <Box style={styles.iconCircle} onClick={handleBoardArrowClick}>
+              {renderBoardArrowIcon}
+            </Box>
+          )}
 
           <Box style={styles.iconCircle} onClick={resetFilters}>
             <ResetIcon width={12} height={12} />
@@ -167,9 +215,21 @@ const MealViews: FC = () => {
 
       <Box>
         {viewMode === "Board" ? (
-          <BoardView ref={boardRef} statusFilter={statusFilter} mealTypeFilter={mealTypeView} />
+          <BoardView
+            key="board"
+            ref={boardRef}
+            statusFilter={statusFilter}
+            mealTypeFilter={mealTypeView}
+            arrowState={arrowState}
+          />
         ) : (
-          <CalendarView />
+          <CalendarView
+            key="calendar"
+            year={currentYear}
+            month={currentMonth}
+            statusFilter={statusFilter}
+            mealTypeFilter={mealTypeView}
+          />
         )}
       </Box>
     </Box>

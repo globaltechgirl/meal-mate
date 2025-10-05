@@ -4,10 +4,13 @@ import {
   useImperativeHandle,
   forwardRef,
   useState,
+  useCallback,
   type CSSProperties,
   memo,
   type FC,
+  useEffect,
 } from "react";
+import { useNavigate } from "react-router-dom";
 
 import AddIcon from "@/assets/icons/add";
 import BoxIcon from "@/assets/icons/box";
@@ -29,6 +32,7 @@ export interface BoardViewHandle {
 interface BoardViewProps {
   statusFilter?: "All" | "Planned" | "Completed";
   mealTypeFilter?: "All" | "Breakfast" | "Lunch" | "Dinner";
+  arrowState?: "Prev" | "Next";
 }
 
 interface MealItem {
@@ -101,8 +105,8 @@ const initialColumns: Column[] = [
   },
 ];
 
-const mealTypeOrder: Record<string, number> = { Breakfast: 1, Lunch: 2, Dinner: 3 };
-const mealStatusOrder: Record<string, number> = { Planned: 1, Completed: 2 };
+const mealTypeOrder: Record<MealItem["type"], number> = { Breakfast: 1, Lunch: 2, Dinner: 3 };
+const mealStatusOrder: Record<MealItem["status"], number> = { Planned: 1, Completed: 2 };
 
 const styles: Record<string, CSSProperties> = {
   wrapper: {
@@ -149,10 +153,11 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: 6,
+    cursor: "pointer",
   },
   mealTop: { 
     display: "flex", 
-    justifyContent: "space-between", 
+    justifyContent: "space-between",
     alignItems: "center" 
   },
   statusBox: {
@@ -165,12 +170,13 @@ const styles: Record<string, CSSProperties> = {
     textAlign: "center",
     cursor: "pointer",
   },
-  mealImage: { 
+  mealImage: {
     width: "100%",
-    height: 80, 
+    height: 80,
     borderRadius: 6,
-    border: "2px solid var(--dark-30)", 
-    objectFit: "cover" 
+    border: "2px solid var(--dark-30)",
+    objectFit: "cover",
+    marginBottom: 6,
   },
   mealInfo: { 
     display: "flex", 
@@ -187,13 +193,13 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 450, 
     color: "var(--light-100)" 
   },
-  tagText: { 
-    fontSize: 8.5, 
-    fontWeight: 450, 
-    color: "var(--light-100)", 
-    display: "flex", 
-    alignItems: "center", 
-    gap: 2 
+  tagText: {
+    fontSize: 8.5,
+    fontWeight: 450,
+    color: "var(--light-100)",
+    display: "flex",
+    alignItems: "center",
+    gap: 2,
   },
   popoverItem: {
     fontSize: 8.5,
@@ -206,7 +212,11 @@ const styles: Record<string, CSSProperties> = {
   },
 };
 
-const PopoverItem = memo(({ label, onClick }: { label: string; onClick: () => void }) => (
+interface PopoverItemProps {
+  label: string;
+  onClick: () => void;
+}
+const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => (
   <Box
     style={styles.popoverItem}
     onClick={onClick}
@@ -222,58 +232,78 @@ interface MealCardProps {
   day: string;
   toggleStatus: (day: string, mealId: number) => void;
 }
+const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus }) => {
+  const navigate = useNavigate();
 
-const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus }) => (
-  <Box style={styles.mealCard}>
-    <Box style={styles.mealTop}>
-      <Box style={{ display: "flex", gap: 4 }}>
-        <Box style={styles.statusBox} onClick={() => toggleStatus(day, meal.id)}>
-          {meal.status}
-        </Box>
-        <Box style={styles.statusBox}>{meal.type}</Box>
-      </Box>
+  const handleNavigate = useCallback(() => {
+    navigate("/shopping-list");
+  }, [navigate]);
 
-      <Popover width={100} position="bottom" shadow="md">
-        <Popover.Target>
-          <Box style={{ cursor: "pointer" }}>
-            <MenuIcon width={10} height={10} />
+  const handleToggleStatus = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      toggleStatus(day, meal.id);
+    },
+    [day, meal.id, toggleStatus]
+  );
+
+  return (
+    <Box style={styles.mealCard}>
+      <Box style={styles.mealTop}>
+        <Box style={{ display: "flex", gap: 4 }}>
+          <Box style={styles.statusBox} onClick={handleToggleStatus}>
+            {meal.status}
           </Box>
-        </Popover.Target>
-        <Popover.Dropdown
-          style={{
-            width: 60,
-            padding: 2,
-            backgroundColor: "var(--dark-30)",
-            border: "1px solid var(--dark-10)",
-            borderRadius: 6,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            marginLeft: "-20px",
-            marginTop: "-2px",
-          }}
-        >
-          <PopoverItem label="Edit" onClick={() => console.log("Edit", meal.id)} />
-          <PopoverItem label="Delete" onClick={() => console.log("Delete", meal.id)} />
-        </Popover.Dropdown>
-      </Popover>
-    </Box>
+          <Box style={styles.statusBox} onClick={(e) => e.stopPropagation()}>
+            {meal.type}
+          </Box>
+        </Box>
 
-    <img src={meal.image} alt={meal.name} style={styles.mealImage} />
+        <Popover width={100} position="bottom" shadow="md">
+          <Popover.Target>
+            <Box style={{ cursor: "pointer" }} onClick={(e) => e.stopPropagation()}>
+              <MenuIcon width={10} height={10} />
+            </Box>
+          </Popover.Target>
+          <Popover.Dropdown
+            style={{
+              width: 60,
+              padding: 2,
+              backgroundColor: "var(--dark-30)",
+              border: "1px solid var(--dark-10)",
+              borderRadius: 6,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              marginLeft: "-20px",
+              marginTop: "-2px",
+            }}
+          >
+            <PopoverItem label="Edit" onClick={() => console.log("Edit", meal.id)} />
+            <PopoverItem label="Delete" onClick={() => console.log("Delete", meal.id)} />
+          </Popover.Dropdown>
+        </Popover>
+      </Box>
 
-    <Box style={styles.mealInfo}>
-      <Text style={styles.mealName}>{meal.name}</Text>
-      <Text style={styles.mealNote}>{meal.note.length > 80 ? `${meal.note.slice(0, 80)}...` : meal.note}</Text>
-      <Box style={{ display: "flex", alignItems: "center", gap: 4 }}>
-        <TagIcon width={10} height={10} />
-        <Text style={styles.tagText}>{meal.recipesCount} recipes</Text>
+      <Box onClick={handleNavigate}>
+        <img src={meal.image} alt={meal.name} style={styles.mealImage} />
+        <Box style={styles.mealInfo}>
+          <Text style={styles.mealName}>{meal.name}</Text>
+          <Text style={styles.mealNote}>
+            {meal.note.length > 80 ? `${meal.note.slice(0, 80)}...` : meal.note}
+          </Text>
+          <Box style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <TagIcon width={10} height={10} />
+            <Text style={styles.tagText}>{meal.recipesCount} recipes</Text>
+          </Box>
+        </Box>
       </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
-  ({ statusFilter = "All", mealTypeFilter = "All" }, ref) => {
+  ({ statusFilter = "All", mealTypeFilter = "All", arrowState }, ref) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [columns, setColumns] = useState<Column[]>(initialColumns);
 
@@ -288,7 +318,13 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
       },
     }));
 
-    const toggleMealStatus = (day: string, mealId: number) => {
+    useEffect(() => {
+      if (!arrowState || !wrapperRef.current) return;
+      const scrollBy = arrowState === "Prev" ? -300 : 300;
+      wrapperRef.current.scrollBy({ left: scrollBy, behavior: "smooth" });
+    }, [arrowState]);
+
+    const toggleMealStatus = useCallback((day: string, mealId: number) => {
       setColumns((prev) =>
         prev.map((col) =>
           col.day === day
@@ -303,7 +339,7 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
             : col
         )
       );
-    };
+    }, []);
 
     return (
       <Box ref={wrapperRef} style={styles.wrapper}>
