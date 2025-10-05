@@ -105,10 +105,6 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: 6,
     padding: 8,
   },
-  textBase: {
-    fontSize: 9.5,
-    fontWeight: 450,
-  },
   topText: {
     fontSize: 9.5,
     fontWeight: 450,
@@ -123,7 +119,7 @@ const styles: Record<string, CSSProperties> = {
   },
   rowText: {
     fontSize: 9.5,
-    fontWeight: 450,
+    fontWeight: 400,
     color: "var(--light-100)",
   },
   statusText: {
@@ -131,6 +127,7 @@ const styles: Record<string, CSSProperties> = {
     width: "fit-content",
     borderRadius: 5,
     backgroundColor: "var(--dark-10)",
+    border: "1px solid var(--dark-20)",
     fontSize: 8.5,
     fontWeight: 400,
     color: "var(--light-200)",

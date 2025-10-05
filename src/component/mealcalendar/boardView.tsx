@@ -162,9 +162,10 @@ const styles: Record<string, CSSProperties> = {
   },
   statusBox: {
     padding: "2px 6px",
-    borderRadius: 5,
+    borderRadius: 4,
     backgroundColor: "var(--dark-30)",
-    fontSize: 8.5,
+    border: "1px solid var(--dark-10)",
+    fontSize: 8,
     fontWeight: 400,
     color: "var(--light-200)",
     textAlign: "center",
@@ -181,7 +182,7 @@ const styles: Record<string, CSSProperties> = {
   mealInfo: { 
     display: "flex", 
     flexDirection: "column", 
-    gap: 6 
+    gap: 5,
   },
   mealName: { 
     fontSize: 9.5, 
@@ -189,13 +190,13 @@ const styles: Record<string, CSSProperties> = {
     color: "var(--light-100)" 
   },
   mealNote: { 
-    fontSize: 8, 
-    fontWeight: 450, 
+    fontSize: 8.5, 
+    fontWeight: 400, 
     color: "var(--light-100)" 
   },
   tagText: {
-    fontSize: 8.5,
-    fontWeight: 450,
+    fontSize: 8,
+    fontWeight: 400,
     color: "var(--light-100)",
     display: "flex",
     alignItems: "center",
@@ -203,7 +204,7 @@ const styles: Record<string, CSSProperties> = {
   },
   popoverItem: {
     fontSize: 8.5,
-    fontWeight: 450,
+    fontWeight: 400,
     color: "var(--light-100)",
     padding: "4px 8px",
     borderRadius: 4,

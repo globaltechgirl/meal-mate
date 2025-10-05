@@ -112,8 +112,8 @@ const styles: Record<string, CSSProperties> = {
     color: "var(--light-200)",
   },
   moreLink: {
-    fontSize: 8,
-    fontWeight: 450,
+    fontSize: 8.5,
+    fontWeight: 400,
     color: "var(--blue-100)",
     marginTop: 2,
     marginLeft: 2,

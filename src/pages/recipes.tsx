@@ -1,5 +1,9 @@
-export default function Recipes() {
+import Recipess from "@/component/recipes/recipess";
+
+const Recipes = () => {
   return (
-    <h1>Recipes Page</h1>
+    <Recipess />
   );
 }
+
+export default Recipes;

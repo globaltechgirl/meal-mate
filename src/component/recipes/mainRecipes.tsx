@@ -1,0 +1,214 @@
+import { Box, Text, Popover } from "@mantine/core";
+import { useState, type FC, memo } from "react";
+
+import RecipesView from "./recipesView";
+
+import BoardIcon from "@/assets/icons/board";
+import ResetIcon from "@/assets/icons/reset";
+import ArrowNextIcon from "@/assets/icons/arrownext";
+import ArrowPrevIcon from "@/assets/icons/arrowprev";
+import StarIcon from "@/assets/icons/star";
+import StarredIcon from "@/assets/icons/starred";
+import PauseIcon from "@/assets/icons/pause";
+
+export type MealTypeView = "All" | "Breakfast" | "Lunch" | "Dinner";
+export type Category = "All" | "Vegetarian" | "Vegan" | "Keto" | "Desserts";
+export type StarState = "Pause" | "Star" | "Starred";
+
+const CATEGORY_LIST: Category[] = ["All", "Vegetarian", "Vegan", "Keto", "Desserts"];
+const STAR_CYCLE: StarState[] = ["Pause", "Star", "Starred"];
+
+const styles = {
+  wrapper: {
+    width: "100%",
+    backgroundColor: "var(--dark-20)",
+    borderRadius: 8,
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+    marginBottom: 4,
+  },
+  header: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "4px 8px",
+  },
+  headerText: {
+    fontSize: 10,
+    fontWeight: 500,
+    color: "var(--light-100)",
+  },
+  iconCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: "50%",
+    background: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    opacity: 1,
+  },
+  disabledIcon: {
+    opacity: 0.4,
+    cursor: "not-allowed",
+  },
+  filterBox: {
+    display: "flex",
+    alignItems: "center",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 6,
+    padding: "0 8px 0 6px",
+    background: "var(--dark-30)",
+    cursor: "pointer",
+    height: 24,
+  },
+  filterText: {
+    marginLeft: 4,
+    fontSize: 8.5,
+    fontWeight: 450,
+    color: "var(--light-100)",
+  },
+  popoverItem: {
+    fontSize: 8.5,
+    fontWeight: 450,
+    color: "var(--light-100)",
+    padding: "4px 8px",
+    borderRadius: 4,
+    cursor: "pointer",
+    backgroundColor: "transparent",
+  },
+  popoverItemSelected: {
+    backgroundColor: "var(--dark-20)",
+  },
+  headerActions: {
+    display: "flex",
+    gap: 8,
+    alignItems: "center",
+  },
+} as const;
+
+interface PopoverItemProps {
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}
+
+const PopoverItem: FC<PopoverItemProps> = memo(({ label, selected, onClick }) => (
+  <Box
+    style={{
+      ...styles.popoverItem,
+      ...(selected ? styles.popoverItemSelected : {}),
+    }}
+    onClick={onClick}
+    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--dark-20)")}
+    onMouseLeave={(e) =>
+      ((e.currentTarget as HTMLElement).style.backgroundColor = selected ? "var(--dark-20)" : "transparent")
+    }
+  >
+    {label}
+  </Box>
+));
+PopoverItem.displayName = "PopoverItem";
+
+const MainRecipes: FC = () => {
+  const [category, setCategory] = useState<Category>("All");
+  const [starState, setStarState] = useState<StarState>("Pause");
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  const toggleStarState = () => {
+    setStarState((prev) => STAR_CYCLE[(STAR_CYCLE.indexOf(prev) + 1) % STAR_CYCLE.length]);
+    setCurrentPage(0);
+  };
+
+  const goPrevPage = () => currentPage > 0 && setCurrentPage(currentPage - 1);
+  const goNextPage = () => currentPage + 1 < totalPages && setCurrentPage(currentPage + 1);
+
+  const resetFilters = () => {
+    setCategory("All");
+    setStarState("Pause");
+    setCurrentPage(0);
+  };
+
+  return (
+    <Box p={3} style={styles.wrapper}>
+      <Box style={styles.header}>
+        <Text style={styles.headerText}>Recipes</Text>
+        <Box style={styles.headerActions}>
+          <Popover width={80} trapFocus position="bottom">
+            <Popover.Target>
+              <Box style={styles.filterBox}>
+                <BoardIcon width={10} height={10} color="var(--light-100)" />
+                <Text style={styles.filterText}>{category}</Text>
+              </Box>
+            </Popover.Target>
+            <Popover.Dropdown
+              style={{
+                width: 80,
+                padding: 2,
+                backgroundColor: "var(--dark-30)",
+                border: "1px solid var(--dark-10)",
+                borderRadius: 6,
+                marginTop: -4,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
+              {CATEGORY_LIST.map((cat) => (
+                <PopoverItem
+                  key={cat}
+                  label={cat}
+                  selected={cat === category}
+                  onClick={() => {
+                    setCategory(cat);
+                    setCurrentPage(0);
+                  }}
+                />
+              ))}
+            </Popover.Dropdown>
+          </Popover>
+
+          <Box style={styles.iconCircle} onClick={toggleStarState}>
+            {starState === "Pause" ? (
+              <PauseIcon width={12} height={12} />
+            ) : starState === "Star" ? (
+              <StarIcon width={12} height={12} color="var(--light-100)" />
+            ) : (
+              <StarredIcon width={12} height={12} color="var(--light-100)" />
+            )}
+          </Box>
+
+          <Box style={{ ...styles.iconCircle, ...(currentPage === 0 ? styles.disabledIcon : {}) }} onClick={goPrevPage}>
+            <ArrowPrevIcon width={12} height={12} />
+          </Box>
+          <Box
+            style={{ ...styles.iconCircle, ...(currentPage + 1 >= totalPages ? styles.disabledIcon : {}) }}
+            onClick={goNextPage}
+          >
+            <ArrowNextIcon width={12} height={12} />
+          </Box>
+
+          <Box style={styles.iconCircle} onClick={resetFilters}>
+            <ResetIcon width={12} height={12} />
+          </Box>
+        </Box>
+      </Box>
+
+      <Box>
+        <RecipesView
+          page={currentPage}
+          category={category}
+          starState={starState}
+          onTotalPagesChange={setTotalPages}
+        />
+      </Box>
+    </Box>
+  );
+};
+
+export default MainRecipes;
