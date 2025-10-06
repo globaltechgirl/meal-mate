@@ -2,22 +2,22 @@ import { Box, Text, Button, Image } from "@mantine/core";
 import { type FC, useState } from "react";
 
 import BestImg1 from "@/assets/best-img1.jpg";
-import StarIcon from "@/assets/icons/star"; // outline star
+import StarIcon from "@/assets/icons/star";
 import StarredIcon from "@/assets/icons/starred";
+import CameraIcon from "@/assets/icons/camera";
 import ClockIcon from "@/assets/icons/clock";
 import CalendarIcon from "@/assets/icons/calendar";
 
 const styles = {
-  contentWrapper: {
-    display: "flex",
-    width: "100%",
-    gap: 10,
-    padding: 20,
+  contentWrapper: { 
+    display: "flex", 
+    width: "100%", 
+    gap: 10 
   },
   imageBox: {
-    flex: 1.2,
+    flex: 1,
     width: "50%",
-    position: "relative" as "relative", // needed for absolute positioning
+    position: "relative" as const,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -28,10 +28,15 @@ const styles = {
     overflow: "hidden",
     cursor: "pointer",
   },
-  starBox: {
-    position: "absolute" as "absolute",
-    top: 12,
-    right: 12,
+  hoverWrapper: {
+    position: "absolute" as const,
+    top: 10,
+    right: 10,
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+  },
+  hoverBox: {
     width: 32,
     height: 32,
     borderRadius: 6,
@@ -45,8 +50,8 @@ const styles = {
     transition: "opacity 0.3s ease",
     zIndex: 2,
   },
-  starBoxVisible: {
-    opacity: 1,
+  hoverBoxVisible: { 
+    opacity: 1 
   },
   detailsWrapper: {
     flex: 1,
@@ -71,20 +76,20 @@ const styles = {
     marginTop: "auto",
     gap: 12,
   },
-  recipeName: {
-    fontWeight: 500,
-    fontSize: 22,
-    color: "var(--light-100)",
+  recipeName: { 
+    fontSize: 22, 
+    fontWeight: 500, 
+    color: "var(--light-100)" 
   },
-  hr: {
-    border: "none",
-    borderTop: "1px dashed var(--dark-10)",
-    margin: "6px 0",
+  hr: { 
+    border: "none", 
+    borderTop: "1px dashed var(--dark-10)", 
+    margin: "6px 0" 
   },
-  descriptionHeader: {
-    fontWeight: 450,
-    fontSize: 11,
-    color: "var(--light-100)",
+  descriptionHeader: { 
+    fontSize: 11, 
+    fontWeight: 450, 
+    color: "var(--light-100)" 
   },
   descriptionText: {
     fontSize: 9.5,
@@ -92,20 +97,20 @@ const styles = {
     color: "var(--light-200)",
     lineHeight: 1.6,
   },
-  boxStyles: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 12,
+  boxStyles: { 
+    display: "flex", 
+    flexDirection: "column", 
+    gap: 12 
   },
-  boxHeader: {
-    fontWeight: 450,
-    fontSize: 10,
-    color: "var(--light-100)",
+  boxHeader: { 
+    fontWeight: 450, 
+    fontSize: 10, 
+    color: "var(--light-100)" 
   },
-  timeWrapper: {
-    display: "flex",
-    gap: 12,
-    alignItems: "center",
+  timeWrapper: { 
+    display: "flex", 
+    gap: 12, 
+    alignItems: "center" 
   },
   timeBox: {
     display: "flex",
@@ -117,15 +122,15 @@ const styles = {
     backgroundColor: "var(--dark-20)",
     border: "1px solid var(--dark-10)",
   },
-  timeText: {
-    fontSize: 9.5,
-    fontWeight: 400,
-    color: "var(--light-200)",
+  timeText: { 
+    fontSize: 9.5, 
+    fontWeight: 400, 
+    color: "var(--light-200)" 
   },
-  servesWrapper: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
+  servesWrapper: { 
+    display: "flex", 
+    alignItems: "center", 
+    gap: 8 
   },
   servesButton: {
     width: 24,
@@ -148,59 +153,105 @@ const styles = {
   },
 } as const;
 
-const recipeDetails = {
-  name: "Delicious Pasta",
-  description:
-    "This classic Italian pasta features rich tomato sauce, fresh basil, and a touch of garlic. Perfect for a hearty dinner or a casual lunch, it’s easy to make and packed with flavor. Serve with a sprinkle of parmesan cheese for the ultimate experience.",
-  lastMade: "2025-10-01",
-  totalTime: "45 min",
-  image: BestImg1,
-};
-
 const DetailsInfo: FC = () => {
-  const [serves, setServes] = useState(2);
-  const [hovered, setHovered] = useState(false);
-  const [starred, setStarred] = useState(false);
+  const [serves, setServes] = useState<number>(2);
+  const [hovered, setHovered] = useState<boolean>(false);
+  const [starred, setStarred] = useState<boolean>(false);
+
+  const [name, setName] = useState<string>("Delicious Pasta");
+  const [editingName, setEditingName] = useState<boolean>(false);
+
+  const [description, setDescription] = useState<string>(
+    "This classic Italian pasta features rich tomato sauce, fresh basil, and a touch of garlic. Perfect for a hearty dinner or a casual lunch, it’s easy to make and packed with flavor. Serve with a sprinkle of parmesan cheese for the ultimate experience."
+  );
+  const [editingDescription, setEditingDescription] = useState<boolean>(false);
+
+  const [lastMade, setLastMade] = useState<string>("2025-10-01");
+  const [editingDate, setEditingDate] = useState<boolean>(false);
+
+  const [totalTime, setTotalTime] = useState<string>("45 min");
+  const [editingTime, setEditingTime] = useState<boolean>(false);
 
   return (
     <Box style={styles.contentWrapper}>
-      {/* Left: Image */}
       <Box
         style={styles.imageBox}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <Image src={recipeDetails.image} alt={recipeDetails.name} radius={8} fit="cover" />
+        <Image src={BestImg1} alt={name} radius={8} fit="cover" />
 
-        {/* Star box */}
-        <Box
-          style={{
-            ...styles.starBox,
-            ...(hovered ? styles.starBoxVisible : {}),
-          }}
-          onClick={() => setStarred(!starred)}
-        >
-          {starred ? (
-            <StarredIcon width={16} height={16} />
-          ) : (
-            <StarIcon width={16} height={16} />
-          )}
+        <Box style={styles.hoverWrapper}>
+          <Box
+            style={{ ...styles.hoverBox, ...(hovered ? styles.hoverBoxVisible : {}) }}
+            onClick={() => setStarred(!starred)}
+          >
+            {starred ? (
+              <StarredIcon width={16} height={16} />
+            ) : (
+              <StarIcon width={16} height={16} />
+            )}
+          </Box>
+
+          <Box style={{ ...styles.hoverBox, ...(hovered ? styles.hoverBoxVisible : {}) }}>
+            <CameraIcon width={16} height={16} />
+          </Box>
         </Box>
       </Box>
 
-      {/* Right: Details */}
       <Box style={styles.detailsWrapper}>
         <Box style={styles.detailsMain}>
           <Box style={styles.detailsBox}>
-            <Box>
-              <Text style={styles.recipeName}>{recipeDetails.name}</Text>
-            </Box>
+            {editingName ? (
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.currentTarget.value)}
+                onBlur={() => setEditingName(false)}
+                autoFocus
+                style={{
+                  fontSize: 22,
+                  fontWeight: 500,
+                  color: "var(--light-100)",
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                }}
+              />
+            ) : (
+              <Text style={styles.recipeName} onClick={() => setEditingName(true)}>
+                {name}
+              </Text>
+            )}
 
             <hr style={styles.hr} />
 
             <Box style={styles.boxStyles}>
               <Text style={styles.descriptionHeader}>Description</Text>
-              <Text style={styles.descriptionText}>{recipeDetails.description}</Text>
+              {editingDescription ? (
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.currentTarget.value)}
+                  onBlur={() => setEditingDescription(false)}
+                  autoFocus
+                  style={{
+                    fontSize: 9.5,
+                    fontWeight: 400,
+                    color: "var(--light-200)",
+                    background: "transparent",
+                    border: "1px solid var(--dark-10)",
+                    borderRadius: 6,
+                    padding: 4,
+                    lineHeight: 1.4,
+                    minHeight: 60,
+                    resize: "vertical",
+                  }}
+                />
+              ) : (
+                <Text style={styles.descriptionText} onClick={() => setEditingDescription(true)}>
+                  {description}
+                </Text>
+              )}
             </Box>
 
             <hr style={styles.hr} />
@@ -211,11 +262,51 @@ const DetailsInfo: FC = () => {
               <Box style={styles.timeWrapper}>
                 <Box style={styles.timeBox}>
                   <CalendarIcon width={10} height={10} color="var(--light-200)" />
-                  <Text style={styles.timeText}>Last made: {recipeDetails.lastMade}</Text>
+                  {editingDate ? (
+                    <input
+                      type="date"
+                      value={lastMade}
+                      onChange={(e) => setLastMade(e.currentTarget.value)}
+                      onBlur={() => setEditingDate(false)}
+                      autoFocus
+                      style={{
+                        fontSize: 9.5,
+                        color: "var(--light-200)",
+                        background: "transparent",
+                        border: "none",
+                        outline: "none",
+                      }}
+                    />
+                  ) : (
+                    <Text style={styles.timeText} onClick={() => setEditingDate(true)}>
+                      Last made: {new Date(lastMade).toLocaleDateString("en-US")}
+                    </Text>
+                  )}
                 </Box>
+
                 <Box style={styles.timeBox}>
                   <ClockIcon width={10} height={10} color="var(--light-200)" />
-                  <Text style={styles.timeText}>Total time: {recipeDetails.totalTime}</Text>
+                  {editingTime ? (
+                    <input
+                      type="text"
+                      value={totalTime}
+                      onChange={(e) => setTotalTime(e.currentTarget.value)}
+                      onBlur={() => setEditingTime(false)}
+                      autoFocus
+                      style={{
+                        fontSize: 9.5,
+                        color: "var(--light-200)",
+                        background: "transparent",
+                        border: "none",
+                        outline: "none",
+                        width: 50,
+                      }}
+                    />
+                  ) : (
+                    <Text style={styles.timeText} onClick={() => setEditingTime(true)}>
+                      Total time: {totalTime}
+                    </Text>
+                  )}
                 </Box>
               </Box>
             </Box>
@@ -224,14 +315,12 @@ const DetailsInfo: FC = () => {
 
             <Box style={styles.boxStyles}>
               <Text style={styles.boxHeader}>Serves</Text>
-
               <Box style={styles.servesWrapper}>
                 <Button
                   variant="outline"
                   size="xs"
                   style={styles.servesButton}
-                  onClick={() => setServes(serves - 1)}
-                  disabled={serves <= 1}
+                  onClick={() => setServes((s) => Math.max(1, s - 1))}
                 >
                   -
                 </Button>
@@ -240,7 +329,7 @@ const DetailsInfo: FC = () => {
                   variant="outline"
                   size="xs"
                   style={styles.servesButton}
-                  onClick={() => setServes(serves + 1)}
+                  onClick={() => setServes((s) => s + 1)}
                 >
                   +
                 </Button>

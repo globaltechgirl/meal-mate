@@ -1,7 +1,12 @@
-import { Box, Text, } from "@mantine/core";
-import { type FC, } from "react";
+import { Box, Text, Popover } from "@mantine/core";
+import { useState, type FC, memo } from "react";
 
+import BoardIcon from "@/assets/icons/board";
+import CheckIcon from "@/assets/icons/check";
 import DetailsView from "./detailsView";
+
+export type Category = "All" | "Vegetarian" | "Vegan" | "Keto" | "Desserts";
+const CATEGORY_LIST: Category[] = ["All", "Vegetarian", "Vegan", "Keto", "Desserts"];
 
 const styles = {
   wrapper: {
@@ -11,7 +16,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: 4,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   header: {
     width: "100%",
@@ -25,21 +30,10 @@ const styles = {
     fontWeight: 500,
     color: "var(--light-100)",
   },
-  iconCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: "50%",
-    background: "var(--dark-30)",
-    border: "1px solid var(--dark-10)",
+  headerActions: {
     display: "flex",
+    gap: 8,
     alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    opacity: 1,
-  },
-  disabledIcon: {
-    opacity: 0.4,
-    cursor: "not-allowed",
   },
   filterBox: {
     display: "flex",
@@ -57,15 +51,98 @@ const styles = {
     fontWeight: 450,
     color: "var(--light-100)",
   },
+  popoverDropdown: {
+    width: 95,
+    padding: 2,
+    backgroundColor: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 6,
+    marginTop: -4,
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+  },
+  popoverItem: {
+    fontSize: 8.5,
+    fontWeight: 450,
+    color: "var(--light-100)",
+    padding: "4px 8px",
+    borderRadius: 4,
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+  },
+  popoverItemSelected: {
+    backgroundColor: "var(--dark-20)",
+  },
 } as const;
 
+interface PopoverItemProps {
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}
+
+const PopoverItem: FC<PopoverItemProps> = memo(({ label, selected, onClick }) => (
+  <Box
+    style={{
+      ...styles.popoverItem,
+      ...(selected ? styles.popoverItemSelected : {}),
+    }}
+    onClick={onClick}
+    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--dark-20)")}
+    onMouseLeave={(e) =>
+      (e.currentTarget.style.backgroundColor = selected ? "var(--dark-20)" : "transparent")
+    }
+  >
+    {label}
+  </Box>
+));
+PopoverItem.displayName = "PopoverItem";
+
 const MainDetails: FC = () => {
+  const [category, setCategory] = useState<Category | null>(null);
+  const [addedToCalendar, setAddedToCalendar] = useState<boolean>(false);
+
   return (
     <Box p={3} style={styles.wrapper}>
       <Box style={styles.header}>
         <Text style={styles.headerText}>Recipes</Text>
-      </Box>
 
+        <Box style={styles.headerActions}>
+          <Popover width={80} trapFocus position="bottom">
+            <Popover.Target>
+              <Box style={styles.filterBox}>
+                <BoardIcon width={10} height={10} color="var(--light-100)" />
+                <Text style={styles.filterText}>
+                  {category ?? "Add to Category"}
+                </Text>
+              </Box>
+            </Popover.Target>
+
+            <Popover.Dropdown style={styles.popoverDropdown}>
+              {CATEGORY_LIST.map((cat) => (
+                <PopoverItem
+                  key={cat}
+                  label={cat}
+                  selected={cat === category}
+                  onClick={() => setCategory(cat)}
+                />
+              ))}
+            </Popover.Dropdown>
+          </Popover>
+
+          <Box
+            style={styles.filterBox}
+            onClick={() => setAddedToCalendar(true)}
+          >
+            <CheckIcon width={10} height={10} color="var(--light-100)" />
+            <Text style={styles.filterText}>
+              {addedToCalendar ? "Added to Calendar" : "Add to Calendar"}
+            </Text>
+          </Box>
+        </Box>
+      </Box>
+      
       <Box>
         <DetailsView />
       </Box>
