@@ -23,6 +23,9 @@ import BestImg3 from "@/assets/best-img3.jpg";
 import BestImg4 from "@/assets/best-img4.jpg";
 import BestImg5 from "@/assets/best-img5.jpg";
 
+import AddMealModal from "./addMealModal";
+import EditMealModal from "./editMealModel";
+
 export interface BoardViewHandle {
   scrollLeft: () => void;
   scrollRight: () => void;
@@ -35,7 +38,7 @@ interface BoardViewProps {
   arrowState?: "Prev" | "Next";
 }
 
-interface MealItem {
+export interface MealItem {
   id: number;
   name: string;
   note: string;
@@ -232,8 +235,9 @@ interface MealCardProps {
   meal: MealItem;
   day: string;
   toggleStatus: (day: string, mealId: number) => void;
+  openEditModal: (meal: MealItem) => void;
 }
-const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus }) => {
+const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus,  openEditModal }) => {
   const navigate = useNavigate();
 
   const handleNavigate = useCallback(() => {
@@ -280,7 +284,7 @@ const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus }) => {
               marginTop: "-2px",
             }}
           >
-            <PopoverItem label="Edit" onClick={() => console.log("Edit", meal.id)} />
+            <PopoverItem label="Edit" onClick={() => openEditModal(meal)}/>
             <PopoverItem label="Delete" onClick={() => console.log("Delete", meal.id)} />
           </Popover.Dropdown>
         </Popover>
@@ -307,6 +311,29 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
   ({ statusFilter = "All", mealTypeFilter = "All", arrowState }, ref) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [columns, setColumns] = useState<Column[]>(initialColumns);
+
+    const [addModalOpened, setAddModalOpened] = useState(false);
+    const [selectedDay, setSelectedDay] = useState<string | undefined>(undefined);
+    const [editModalOpened, setEditModalOpened] = useState(false);
+    const [selectedMeal, setSelectedMeal] = useState<MealItem | null>(null);
+
+    const openAddModal = (day: string) => {
+      setSelectedDay(day);
+      setAddModalOpened(true);
+    };
+    const closeAddModal = () => {
+      setAddModalOpened(false);
+      setSelectedDay(undefined);
+    };
+
+    const openEditModal = (meal: MealItem) => {
+      setSelectedMeal(meal);
+      setEditModalOpened(true);
+    };
+    const closeEditModal = () => {
+      setEditModalOpened(false);
+      setSelectedMeal(null);
+    };
 
     useImperativeHandle(ref, () => ({
       scrollLeft: () => wrapperRef.current?.scrollBy({ left: -300, behavior: "smooth" }),
@@ -343,31 +370,37 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
     }, []);
 
     return (
-      <Box ref={wrapperRef} style={styles.wrapper}>
-        {columns.map((col) => (
-          <Box key={col.day} style={styles.column}>
-            <Box style={styles.columnHeader}>
-              <Box style={styles.headerLeft}>
-                <BoxIcon width={12} height={12} style={styles.addIcon} />
-                <Text style={{ fontSize: 9.5, fontWeight: 450 }}>{col.day}</Text>
+      <>
+        <Box ref={wrapperRef} style={styles.wrapper}>
+          {columns.map((col) => (
+            <Box key={col.day} style={styles.column}>
+              <Box style={styles.columnHeader}>
+                <Box style={styles.headerLeft}>
+                  <BoxIcon width={12} height={12} style={styles.addIcon} />
+                  <Text style={{ fontSize: 9.5, fontWeight: 450 }}>{col.day}</Text>
+                </Box>
+                <AddIcon width={10} height={10} style={styles.addIcon} onClick={() => openAddModal(col.day)} />
               </Box>
-              <AddIcon width={10} height={10} style={styles.addIcon} />
-            </Box>
 
-            {col.meals
-              .filter((meal) => mealTypeFilter === "All" || meal.type === mealTypeFilter)
-              .filter((meal) => statusFilter === "All" || meal.status === statusFilter)
-              .sort((a, b) =>
-                mealTypeOrder[a.type] !== mealTypeOrder[b.type]
-                  ? mealTypeOrder[a.type] - mealTypeOrder[b.type]
-                  : mealStatusOrder[a.status] - mealStatusOrder[b.status]
-              )
-              .map((meal) => (
-                <MealCard key={meal.id} meal={meal} day={col.day} toggleStatus={toggleMealStatus} />
-              ))}
-          </Box>
-        ))}
-      </Box>
+              {col.meals
+                .filter((meal) => mealTypeFilter === "All" || meal.type === mealTypeFilter)
+                .filter((meal) => statusFilter === "All" || meal.status === statusFilter)
+                .sort((a, b) =>
+                  mealTypeOrder[a.type] !== mealTypeOrder[b.type]
+                    ? mealTypeOrder[a.type] - mealTypeOrder[b.type]
+                    : mealStatusOrder[a.status] - mealStatusOrder[b.status]
+                )
+                .map((meal) => (
+                  <MealCard key={meal.id} meal={meal} day={col.day} toggleStatus={toggleMealStatus} openEditModal={openEditModal} />
+                ))}
+            </Box>
+          ))}
+        </Box>
+
+        <AddMealModal opened={addModalOpened} onClose={closeAddModal} day={selectedDay} />
+
+        <EditMealModal opened={editModalOpened} onClose={closeEditModal} meal={selectedMeal} />
+      </>
     );
   }
 );
