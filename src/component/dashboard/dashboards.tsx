@@ -1,6 +1,6 @@
 import { Box, Grid, Paper, Text } from "@mantine/core";
 
-import Info from "@/component/layout/info";
+import Info from "@/component/dashboard/info";
 import Classes from "@/component/dashboard/classes";
 import MonthlyRecipes from "@/component/dashboard/monthlyRecipes";
 import WeeklyBest from "@/component/dashboard/weeklyBest";

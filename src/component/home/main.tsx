@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import FrameTop from "@/assets/frame-top.svg?react";
 import FrameBottom from "@/assets/frame-bottom.svg?react";
 import FrameLogo1 from "@/assets/frame-logo1.svg?react";
-import FrameLogo2 from "@/assets/frame-logo2.svg?react";
 import FrameLogo3 from "@/assets/frame-logo3.svg?react";
 import FrameLogo4 from "@/assets/frame-logo4.svg?react";
 import NotifyIcon from "@/assets/notify-svg.svg?react";
@@ -22,19 +21,13 @@ type LogoComponentType = React.FC<{ style?: React.CSSProperties }>;
 
 const logos: (LogoComponentType | typeof FrameLogo6)[] = [
   FrameLogo1,
-  FrameLogo2,
-  FrameLogo3,
-  FrameLogo3,
   FrameLogo3,
   FrameLogo6,
 ];
 
 const logoStyles: { width: string; top: string; left: string }[] = [
   { width: "35px", top: "50%", left: "48%" }, 
-  { width: "60px", top: "46%", left: "46%" }, 
   { width: "50px", top: "48%", left: "46%" },
-  { width: "50px", top: "48%", left: "44%" },
-  { width: "50px", top: "48%", left: "42%" }, 
   { width: "50px", top: "48%", left: "42%" },
 ];
 
@@ -69,7 +62,7 @@ const Main: React.FC = () => {
         flexDirection: "column",
         overflow: "hidden",
         position: "relative",
-        background: "var(--dark-500)",
+        background: "var(--dark-10)",
       }}
     >
       <Box style={{ flex: 1, display: "flex", transform: "translateY(-10%)" }}>

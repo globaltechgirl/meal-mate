@@ -31,16 +31,16 @@ const PrivateLayout = () => {
           borderRight: "none",
           boxShadow: "none",
           backgroundColor: "var(--dark-10)",
-          padding: "10px",
+          padding: 10,
         }}
       >
         <Box
           style={{
             height: "100%",
-            borderRadius: "8px",
+            borderRadius: 8,
             backgroundColor: "var(--dark-20)",
             border: "0.5px solid var(--border-100)",
-            padding: "20px 10px",
+            padding: 10,
           }}
         >
           <SideBar />

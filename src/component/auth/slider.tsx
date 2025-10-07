@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 import FrameTop from "@/assets/frame-top.svg?react";
 import FrameLogo3 from "@/assets/frame-logo3.svg?react";
-import Frame2 from "@/assets/login-img1.webp";
-import Frame3 from "@/assets/login-img2.webp";
+import Frame2 from "@/assets/best-img2.jpg";
+import Frame3 from "@/assets/best-img5.jpg";
 
 type ContentSlide = {
   type: "content";
@@ -24,7 +24,7 @@ type Slide = ContentSlide | ImageSlide;
 const slides: Slide[] = [
   {
     type: "content",
-    logo: <FrameLogo3 style={{ width: 50, height: 50 }} />,
+    logo: <FrameLogo3 style={{ width: 40, height: 40 }} />,
     title: "One Platform to Plan Smarter, Cook Easier, Eat Better",
     subtext:
       "An all-in-one platform designed to simplify meal planning, streamline cooking, and support healthier living.",
@@ -50,7 +50,8 @@ const Slider: React.FC = () => {
     height: "100%",
     borderRadius: 8,
     overflow: "hidden",
-    background: "var(--dark-500)",
+    background: "var(--dark-20)",
+    border: "1px solid var(--dark-10)",
     position: "relative",
   };
 
@@ -64,7 +65,7 @@ const Slider: React.FC = () => {
 
   const contentWrapperStyles: React.CSSProperties = {
     textAlign: "center",
-    marginBottom: 60,
+    marginBottom: 50,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -74,7 +75,7 @@ const Slider: React.FC = () => {
   const textWrapperStyles: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
-    gap: 6,
+    gap: 10,
   };
 
   return (
@@ -137,10 +138,10 @@ const Slider: React.FC = () => {
                 <Box style={textWrapperStyles}>
                   <Text 
                     style={{ 
-                      fontSize: 16, 
+                      fontSize: 14, 
                       fontWeight: 600, 
                       color: "var(--light-100)",
-                      width: "70%",
+                      width: "60%",
                       margin: "0 auto",
                     }}
                   >
@@ -148,7 +149,7 @@ const Slider: React.FC = () => {
                   </Text>
                   <Text 
                     style={{ 
-                      fontSize: 9, 
+                      fontSize: 8.5, 
                       fontWeight: 400, 
                       color: "var(--light-200)",
                       width: "60%",
