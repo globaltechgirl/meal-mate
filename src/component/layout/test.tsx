@@ -10,33 +10,28 @@ const PrivateLayout = () => {
 
   return (
     <AppShell
-      padding={0}
-      header={{ height: 0 }}
+      padding="md"
+      header={{ height: { base: 60, sm: 0 } }}
       navbar={{
         width: 220,
         breakpoint: "sm",
         collapsed: { mobile: !opened },
       }}
-      style={{
-        backgroundColor: "var(--dark-10)",
-        minHeight: "100vh",
-      }}
+      style={{ backgroundColor: "var(--dark-10)" }}
     >
-      {/* Header (mobile only) */}
       <AppShell.Header hiddenFrom="sm">
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between p-6">
           <Logo />
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
         </div>
       </AppShell.Header>
 
-      {/* Sidebar */}
       <AppShell.Navbar
-        p={10}
-        pr={0}
         style={{
           borderRight: "none",
+          boxShadow: "none",
           backgroundColor: "var(--dark-10)",
+          padding: 10,
         }}
       >
         <Box
@@ -52,15 +47,14 @@ const PrivateLayout = () => {
         </Box>
       </AppShell.Navbar>
 
-      {/* Main content automatically fills remaining space */}
       <AppShell.Main
         style={{
-          backgroundColor: "var(--dark-10)",
-          minHeight: "100vh",
-          overflow: "auto",
+          padding: "10px 0",
+          marginLeft: 220,
+          marginRight: "10px",
         }}
       >
-        <Box p={10} style={{ height: "100%", width: "100%", padding: 16 }}>
+        <Box>
           <Outlet />
         </Box>
       </AppShell.Main>
