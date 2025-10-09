@@ -1,23 +1,23 @@
+import { type FC, memo, useCallback, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { NAV_LINKS } from "@/utils/constants";
-import { Box, Text, Popover } from "@mantine/core";
-import { useState, type CSSProperties, type FC, useCallback } from "react";
+import { Box, Popover, Text } from "@mantine/core";
 
+import { NAV_LINKS } from "@/utils/constants";
 import FrameLogo3 from "@/assets/frame-logo3.svg?react";
 import FrameLogo4 from "@/assets/frame-logo4.svg?react";
 import UnfoldIcon from "@/assets/icons/unfold";
 import UserImg from "@/assets/best-img1.jpg";
 
-const styles: Record<string, CSSProperties> = {
+const styles = {
   wrapper: {
     height: "100%",
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column" as const,
     justifyContent: "space-between",
   },
   topSection: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column" as const,
     gap: 20,
   },
   logoBox: {
@@ -28,7 +28,7 @@ const styles: Record<string, CSSProperties> = {
   },
   navLinks: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column" as const,
     width: "100%",
     gap: 0,
   },
@@ -53,11 +53,11 @@ const styles: Record<string, CSSProperties> = {
     height: 30,
     borderRadius: 6,
     border: "1px solid var(--dark-10)",
-    objectFit: "cover",
+    objectFit: "cover" as const,
   },
   nameEmail: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column" as const,
     gap: 1,
     letterSpacing: "0.1px",
   },
@@ -70,16 +70,6 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 8,
     fontWeight: 400,
     color: "var(--light-200)",
-  },
-  popoverDropdown: {
-    width: 90,
-    padding: 2,
-    backgroundColor: "var(--dark-30)",
-    border: "1px solid var(--dark-10)",
-    borderRadius: 6,
-    display: "flex",
-    flexDirection: "column",
-    gap: 2,
   },
   popoverItem: {
     fontSize: 8.5,
@@ -95,9 +85,25 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 400,
     color: "var(--light-300)",
     marginTop: 10,
-    textAlign: "center",
+    textAlign: "center" as const,
   },
 };
+
+interface PopoverItemProps {
+  label: string;
+  onClick: () => void;
+}
+const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => (
+  <Box
+    style={styles.popoverItem}
+    onClick={onClick}
+    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--dark-20)")}
+    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+  >
+    {label}
+  </Box>
+));
+PopoverItem.displayName = "PopoverItem";
 
 const Sidebar: FC = () => {
   const [opened, setOpened] = useState(false);
@@ -117,11 +123,11 @@ const Sidebar: FC = () => {
   }, []);
 
   return (
-    <Box style={styles.wrapper}>
+    <Box style={styles.wrapper}> 
       <Box style={styles.topSection}>
         <Box style={styles.logoBox}>
-          <FrameLogo3 style={{ width: 25, height: "auto" }} />
-          <FrameLogo4 style={{ width: 75, height: "auto" }} />
+          <FrameLogo3 width={25} height="auto" />
+          <FrameLogo4 width={75} height="auto" />
         </Box>
 
         <Box style={styles.navLinks}>
@@ -142,11 +148,11 @@ const Sidebar: FC = () => {
                 color: "var(--light-100)",
                 backgroundColor: isActive ? "var(--dark-30)" : "transparent",
                 border: isActive ? "1px solid var(--dark-10)" : "transparent",
-                marginBottom: isActive ? "5px" : "0px",
+                marginBottom: isActive ? 5 : 0,
                 transition: "all 0.2s ease",
               })}
             >
-              <Icon style={{ width: 10, height: 10, marginTop: 1 }} />
+              <Icon width={10} height={10} style={{ marginTop: 1 }} />
               {label}
             </NavLink>
           ))}
@@ -168,23 +174,20 @@ const Sidebar: FC = () => {
             </Box>
           </Popover.Target>
 
-          <Popover.Dropdown style={styles.popoverDropdown}>
-            <Box
-              style={styles.popoverItem}
-              onClick={handleViewProfile}
-              role="button"
-              tabIndex={0}
-            >
-              View Profile
-            </Box>
-            <Box
-              style={styles.popoverItem}
-              onClick={handleLogout}
-              role="button"
-              tabIndex={0}
-            >
-              Logout
-            </Box>
+          <Popover.Dropdown
+            style={{
+              width: 90,
+              padding: 2,
+              backgroundColor: "var(--dark-30)",
+              border: "1px solid var(--dark-10)",
+              borderRadius: 6,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+            <PopoverItem label="View Profile" onClick={handleViewProfile} />
+            <PopoverItem label="Logout" onClick={handleLogout} />
           </Popover.Dropdown>
         </Popover>
 

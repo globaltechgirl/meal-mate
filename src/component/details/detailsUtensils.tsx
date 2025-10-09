@@ -1,14 +1,14 @@
+import { type FC, type CSSProperties, useState, useCallback, memo } from "react";
 import { Box, Text, Popover } from "@mantine/core";
-import { type FC, useState, memo } from "react";
 
 import UtensilsIcon from "@/assets/icons/utensils";
 import CheckIcon from "@/assets/icons/check";
 import MenuIcon from "@/assets/icons/menu";
 
-const styles = {
-  contentWrapper: { 
-    display: "flex", 
-    width: "100%" 
+const styles: Record<string, CSSProperties> = {
+  contentWrapper: {
+    display: "flex",
+    width: "100%",
   },
   detailsWrapper: {
     flex: 1,
@@ -34,16 +34,16 @@ const styles = {
     alignItems: "center",
     padding: "4px 6px 6px 6px",
   },
-  detailsHeader: { 
-    fontSize: 10, 
-    fontWeight: 450, 
-    color: "var(--light-100)" 
+  detailsHeader: {
+    fontSize: 10,
+    fontWeight: 450,
+    color: "var(--light-100)",
   },
-  utensilRow: { 
-    display: "flex", 
-    alignItems: "center", 
-    gap: 10, 
-    position: "relative" 
+  utensilRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    position: "relative",
   },
   iconWrapper: {
     position: "relative",
@@ -68,10 +68,10 @@ const styles = {
     borderLeft: "1px dashed var(--dark-10)",
     zIndex: 0,
   },
-  utensilText: { 
-    fontSize: 10, 
-    fontWeight: 400, 
-    color: "var(--light-100)" 
+  utensilText: {
+    fontSize: 10,
+    fontWeight: 400,
+    color: "var(--light-100)",
   },
   popoverItem: {
     fontSize: 9,
@@ -94,16 +94,26 @@ interface PopoverItemProps {
   onClick: () => void;
 }
 
-const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => (
-  <Box
-    style={styles.popoverItem}
-    onClick={onClick}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--dark-20)")}
-    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-  >
-    {label}
-  </Box>
-));
+const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => {
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.backgroundColor = "var(--dark-20)";
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.backgroundColor = "transparent";
+  };
+
+  return (
+    <Box
+      style={styles.popoverItem}
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {label}
+    </Box>
+  );
+});
 PopoverItem.displayName = "PopoverItem";
 
 const DetailsUtensils: FC = () => {
@@ -118,41 +128,46 @@ const DetailsUtensils: FC = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const toggleCheck = (index: number) => {
+  const toggleCheck = useCallback((index: number) => {
     setUtensils(prev =>
-      prev.map((item, i) => (i === index ? { ...item, checked: !item.checked } : item))
+      prev.map((item, i) =>
+        i === index ? { ...item, checked: !item.checked } : item
+      )
     );
     setSelectedIndex(index);
-  };
+  }, []);
 
-  const handleAdd = () => {
+  const handleAdd = useCallback(() => {
     setUtensils(prev => [...prev, { text: "", checked: false }]);
     setEditingIndex(utensils.length);
     setOpened(false);
-  };
+  }, [utensils.length]);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (selectedIndex !== null) setEditingIndex(selectedIndex);
     setOpened(false);
-  };
+  }, [selectedIndex]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (selectedIndex !== null) {
       setUtensils(prev => prev.filter((_, i) => i !== selectedIndex));
       setSelectedIndex(null);
     }
     setOpened(false);
-  };
+  }, [selectedIndex]);
 
-  const updateText = (index: number, value: string) => {
-    setUtensils(prev => prev.map((item, i) => (i === index ? { ...item, text: value } : item)));
-  };
+  const updateText = useCallback((index: number, value: string) => {
+    setUtensils(prev =>
+      prev.map((item, i) => (i === index ? { ...item, text: value } : item))
+    );
+  }, []);
 
   return (
     <Box style={styles.contentWrapper}>
       <Box style={styles.detailsWrapper}>
         <Box style={styles.detailsHeaderWrapper}>
           <Text style={styles.detailsHeader}>Utensils</Text>
+
           <Popover
             width={100}
             position="bottom"
@@ -161,10 +176,14 @@ const DetailsUtensils: FC = () => {
             onClose={() => setOpened(false)}
           >
             <Popover.Target>
-              <Box style={{ cursor: "pointer" }} onClick={() => setOpened(o => !o)}>
+              <Box
+                style={{ cursor: "pointer" }}
+                onClick={() => setOpened(o => !o)}
+              >
                 <MenuIcon width={10} height={10} color="var(--light-100)" />
               </Box>
             </Popover.Target>
+
             <Popover.Dropdown
               style={{
                 width: 60,
@@ -188,11 +207,14 @@ const DetailsUtensils: FC = () => {
 
         <Box style={styles.detailsMain}>
           {utensils.map((item, index) => (
-            <Box key={index} style={styles.utensilRow}>
+            <Box key={`${item.text}-${index}`} style={styles.utensilRow}>
               <Box
                 style={{
                   ...styles.iconWrapper,
-                  borderColor: selectedIndex === index ? "var(--light-100)" : "var(--dark-10)",
+                  borderColor:
+                    selectedIndex === index
+                      ? "var(--light-100)"
+                      : "var(--dark-10)",
                 }}
                 onClick={() => toggleCheck(index)}
               >
@@ -223,7 +245,10 @@ const DetailsUtensils: FC = () => {
                   }}
                 />
               ) : (
-                <Text style={styles.utensilText} onClick={() => setEditingIndex(index)}>
+                <Text
+                  style={styles.utensilText}
+                  onClick={() => setEditingIndex(index)}
+                >
                   {item.text}
                 </Text>
               )}

@@ -1,42 +1,58 @@
-import { Box, Grid, Paper, Text } from "@mantine/core";
+import { type FC, type CSSProperties, type ReactNode } from "react";
+import { Box, Grid, Paper } from "@mantine/core";
 
 import Info from "@/component/layout/info";
 import MainRecipes from "./mainRecipes";
 
-type CardProps = {
-  title: React.ReactNode;
-};
+interface CardProps {
+  children: ReactNode;
+}
 
-const Card: React.FC<CardProps> = ({ title }) => (
+const Card: FC<CardProps> = ({ children }) => (
   <Paper
-    shadow="sm"
     radius="md"
-    style={{
-      backgroundColor: "var(--dark-20)",
-      border: "0.5px solid var(--border-100)",
-      height: "100%",
-    }}
+    bg="var(--dark-20)"
+    h="100%"
+    style={{ display: "flex", flexDirection: "column", overflow: "hidden", }}
   >
-    <Text size="sm" fw={500} c="var(--light-100)">
-      {title}
-    </Text>
+    {children}
   </Paper>
 );
 
-const Recipess: React.FC = () => (
-  <Box style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-    <Grid gutter={10} m={0}>
-      <Grid.Col span={12}>
-        <Card title={<Info />} />
-      </Grid.Col>
-    </Grid>
+const styles: Record<string, CSSProperties> = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    height: "100%",
+  },
+  gridFullHeight: {
+    flex: 1,
+    display: "flex",
+  },
+  columnFullHeight: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+  },
+};
 
-    <Grid gutter={10} m={0}>
-      <Grid.Col span={12}>
-        <Card title={<MainRecipes />} />
-      </Grid.Col>
-    </Grid>
-  </Box>
-);
+const MealCalendars: FC = () => {
+  return (
+    <Box style={styles.container}>
+      <Grid gutter={10} m={0}>
+        <Grid.Col span={12}>
+          <Card><Info /></Card>
+        </Grid.Col>
+      </Grid>
 
-export default Recipess;
+      <Grid gutter={10} m={0} style={styles.gridFullHeight}>
+        <Grid.Col span={12} style={styles.columnFullHeight}>
+          <Card><MainRecipes /></Card>
+        </Grid.Col>
+      </Grid>
+    </Box>
+  );
+};
+
+export default MealCalendars;

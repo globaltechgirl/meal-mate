@@ -1,26 +1,33 @@
-import { useState, type FC, type CSSProperties } from "react";
+import { type FC, useState, useCallback, type CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mantine/hooks";
-import { Box, Text, Button } from "@mantine/core";
+import { Box, Button, Text } from "@mantine/core";
 import { Eye, EyeOff } from "tabler-icons-react";
+
 import FrameLogo3 from "@/assets/frame-logo3.svg?react";
 
 const Create: FC = () => {
   const navigate = useNavigate();
 
-  const isSmall = useMediaQuery("(max-width: 768px)");
-  const isMedium = useMediaQuery("(max-width: 1024px)");
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+  const isMediumScreen = useMediaQuery("(max-width: 1024px)");
 
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const togglePasswordVisibility = () => setPasswordVisible((v) => !v);
-
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible((v) => !v);
-  const handleNavigate = (path: string) => () => navigate(path);
+
+  const togglePasswordVisibility = useCallback(
+    () => setPasswordVisible((prev) => !prev), []
+  );
+  const toggleConfirmPasswordVisibility = useCallback(
+    () => setConfirmPasswordVisible((prev) => !prev), []
+  );
+  const handleNavigate = useCallback(
+    (path: string) => () => navigate(path),
+    [navigate]
+  );
 
   const styles: Record<string, CSSProperties> = {
     container: {
@@ -29,8 +36,8 @@ const Create: FC = () => {
       justifyContent: "space-between",
       width: "100%",
       height: "100%",
-      borderRadius: 8,
       padding: 10,
+      borderRadius: 8,
       background: "var(--dark-30)",
       border: "1px solid var(--dark-10)",
     },
@@ -57,37 +64,39 @@ const Create: FC = () => {
       textAlign: "center",
       gap: 30,
     },
-    welcomeText: { 
-      fontSize: 16, 
+    welcomeText: {
+      fontSize: 16,
       fontWeight: 600,
-      color: "var(--light-100)" 
+      color: "var(--light-100)",
     },
-    subtitle: { 
-      marginTop: 4, 
-      fontSize: 9, 
+    subtitle: {
+      marginTop: 4,
+      fontSize: 9,
       fontWeight: 500,
-      color: "var(--light-200)" 
+      color: "var(--light-200)",
     },
     formWrapper: {
       display: "flex",
       flexDirection: "column",
       gap: 10,
-      width: isSmall ? "90%" : isMedium ? "80%" : "80%", 
+      width: isSmallScreen ? "90%" : isMediumScreen ? "80%" : "70%",
       margin: "0 auto",
       textAlign: "left",
     },
-    formMain: { 
-      display: "flex", 
-      flexDirection: "column", 
-      gap: 15 
+    formMain: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 15,
     },
-    label: { 
-      fontSize: 9, 
-      fontWeight: 450, 
-      color: "var(--light-100)", 
-      marginBottom: -5 
+    label: {
+      fontSize: 9,
+      fontWeight: 450,
+      color: "var(--light-100)",
+      marginBottom: -5,
     },
     input: {
+      width: "100%",
+      boxSizing: "border-box",
       borderRadius: 8,
       padding: "10px",
       fontSize: 9,
@@ -96,35 +105,33 @@ const Create: FC = () => {
       color: "var(--light-100)",
       border: "1px solid var(--dark-10)",
       outline: "none",
-      width: "100%",
-      boxSizing: "border-box",
     },
-    passwordWrapper: { 
-      position: "relative", 
-      display: "flex", 
-      alignItems: "center" 
+    passwordWrapper: {
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
     },
-    passwordIcon: { 
-      position: "absolute", 
-      right: 15, 
-      cursor: "pointer", 
-      color: "var(--light-100)" 
+    passwordIcon: {
+      position: "absolute",
+      right: 15,
+      cursor: "pointer",
+      color: "var(--light-100)",
     },
     button: {
       marginTop: 10,
+      width: "100%",
       fontSize: 9,
       fontWeight: 450,
       color: "var(--light-100)",
       borderRadius: 8,
-      cursor: "pointer",
-      width: "100%",
       backgroundColor: "var(--dark-10)",
       border: "0.5px solid var(--dark-10)",
+      cursor: "pointer",
       boxShadow:
         "inset 1px 1px 2px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(0, 0, 0, 0.15)",
       transition: "opacity 0.2s ease",
     },
-    forgotPassword: {
+    formLink: {
       marginTop: 10,
       textAlign: "center",
       cursor: "pointer",
@@ -134,15 +141,15 @@ const Create: FC = () => {
       textDecoration: "underline",
       textUnderlineOffset: 2.5,
     },
-    footer: { 
-      display: "flex", 
-      justifyContent: "space-between", 
-      alignItems: "center" 
+    footer: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
-    footerText: { 
-      fontSize: 8.5, 
-      fontWeight: 400, 
-      color: "var(--light-100)" 
+    footerText: {
+      fontSize: 8.5,
+      fontWeight: 400,
+      color: "var(--light-100)",
     },
     registerLink: {
       fontSize: 8.5,
@@ -164,7 +171,9 @@ const Create: FC = () => {
       <Box style={styles.main}>
         <Box>
           <Text style={styles.welcomeText}>Create Your Account</Text>
-          <Text style={styles.subtitle}>Personalized meal planning - sign up to start</Text>
+          <Text style={styles.subtitle}>
+            Personalized meal planning — sign up to start
+          </Text>
         </Box>
 
         <Box style={styles.formWrapper}>
@@ -188,9 +197,17 @@ const Create: FC = () => {
                 style={styles.input}
               />
               {passwordVisible ? (
-                <EyeOff size={10} style={styles.passwordIcon} onClick={togglePasswordVisibility} />
+                <EyeOff
+                  size={10}
+                  style={styles.passwordIcon}
+                  onClick={togglePasswordVisibility}
+                />
               ) : (
-                <Eye size={10} style={styles.passwordIcon} onClick={togglePasswordVisibility} />
+                <Eye
+                  size={10}
+                  style={styles.passwordIcon}
+                  onClick={togglePasswordVisibility}
+                />
               )}
             </Box>
 
@@ -204,9 +221,17 @@ const Create: FC = () => {
                 style={styles.input}
               />
               {confirmPasswordVisible ? (
-                <EyeOff size={10} style={styles.passwordIcon} onClick={toggleConfirmPasswordVisibility} />
+                <EyeOff
+                  size={10}
+                  style={styles.passwordIcon}
+                  onClick={toggleConfirmPasswordVisibility}
+                />
               ) : (
-                <Eye size={10} style={styles.passwordIcon} onClick={toggleConfirmPasswordVisibility} />
+                <Eye
+                  size={10}
+                  style={styles.passwordIcon}
+                  onClick={toggleConfirmPasswordVisibility}
+                />
               )}
             </Box>
           </Box>
@@ -220,7 +245,7 @@ const Create: FC = () => {
             Register
           </Button>
 
-          <Text style={styles.forgotPassword}>Terms & Privacy Policy</Text>
+          <Text style={styles.formLink}>Terms & Privacy Policy</Text>
         </Box>
       </Box>
 

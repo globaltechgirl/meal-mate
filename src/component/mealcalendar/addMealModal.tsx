@@ -1,11 +1,5 @@
+import { type FC, type CSSProperties, useState, useRef, useCallback, type KeyboardEvent, type ChangeEvent } from "react";
 import { Modal, Text, Box, Stack, Group } from "@mantine/core";
-import {
-  type FC,
-  type CSSProperties,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
 
 import UploadIcon from "@/assets/icons/upload";
 
@@ -14,6 +8,12 @@ interface AddMealModalProps {
   onClose: () => void;
   day?: string;
 }
+
+type Status = "Planned" | "Completed";
+type MealType = "Breakfast" | "Lunch" | "Dinner";
+
+const STATUS_CYCLE: Status[] = ["Planned", "Completed"];
+const MEAL_TYPE_CYCLE: MealType[] = ["Breakfast", "Lunch", "Dinner"];
 
 const styles: Record<string, CSSProperties> = {
   wrapper: {
@@ -46,7 +46,13 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 400,
     color: "var(--light-100)",
   },
-  innerBoxUpload: {
+  wrapperHeader: {
+    fontSize: 8.5,
+    fontWeight: 450,
+    color: "var(--light-100)",
+    padding: "0 4px",
+  },
+  uploadBox: {
     backgroundColor: "var(--dark-30)",
     borderRadius: 8,
     border: "1px solid var(--dark-10)",
@@ -57,15 +63,10 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
   },
-  wrapperHeader: {
-    fontSize: 8.5,
-    fontWeight: 450,
-    color: "var(--light-100)",
-    padding: "0 4px",
-  },
   innerBoxButton: {
     display: "flex",
-    gap: "2px",
+    alignItems: "center",
+    gap: 4,
     width: "fit-content",
     padding: "6px 12px",
     borderRadius: 8,
@@ -74,14 +75,12 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 8.5,
     fontWeight: 400,
     color: "var(--light-200)",
-    textAlign: "center",
     cursor: "pointer",
-    alignItems: "center",
   },
   innerTextWrapper: {
     display: "flex",
     flexDirection: "column",
-    gap: "4px",
+    gap: 4,
     marginTop: 10,
   },
   wrapperMaintext: {
@@ -96,7 +95,7 @@ const styles: Record<string, CSSProperties> = {
   },
   toggleRow: {
     display: "flex",
-    gap: "12px",
+    gap: 12,
     alignItems: "center",
     flexWrap: "wrap",
   },
@@ -108,8 +107,8 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 8,
     fontWeight: 400,
     color: "var(--light-100)",
-    textAlign: "center",
     cursor: "pointer",
+    textAlign: "center",
   },
   input: {
     width: "100%",
@@ -128,12 +127,11 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 400,
     color: "var(--light-100)",
     textAlign: "center",
-    cursor: "pointer",
   },
   actionRow: {
     display: "flex",
     justifyContent: "flex-end",
-    gap: "10px",
+    gap: 10,
   },
   actionButton: {
     padding: "4px 10px",
@@ -148,27 +146,18 @@ const styles: Record<string, CSSProperties> = {
   },
 };
 
-const STATUS_CYCLE = ["Planned", "Completed"] as const;
-type Status = (typeof STATUS_CYCLE)[number];
-
-const MEAL_TYPE_CYCLE = ["Breakfast", "Lunch", "Dinner"] as const;
-type MealType = (typeof MEAL_TYPE_CYCLE)[number];
-
 const AddMealModal: FC<AddMealModalProps> = ({ opened, onClose }) => {
   const [status, setStatus] = useState<Status>("Planned");
   const [mealType, setMealType] = useState<MealType>("Breakfast");
-
   const [foodName, setFoodName] = useState("");
   const [foodNote, setFoodNote] = useState("");
-
   const [recipes, setRecipes] = useState<string[]>([]);
   const [recipeInput, setRecipeInput] = useState("");
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleAddRecipe = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter" && recipeInput.trim()) {
         e.preventDefault();
         setRecipes((prev) => [...prev, recipeInput.trim()]);
@@ -179,34 +168,19 @@ const AddMealModal: FC<AddMealModalProps> = ({ opened, onClose }) => {
   );
 
   const toggleStatus = useCallback(() => {
-    setStatus(
-      (prev) =>
-        STATUS_CYCLE[(STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length]
-    );
+    setStatus((prev) => STATUS_CYCLE[(STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length]);
   }, []);
 
   const toggleMealType = useCallback(() => {
-    setMealType(
-      (prev) =>
-        MEAL_TYPE_CYCLE[
-          (MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length
-        ]
-    );
+    setMealType((prev) => MEAL_TYPE_CYCLE[(MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length]);
   }, []);
 
-  const handleFileClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
+  const handleFileClick = useCallback(() => fileInputRef.current?.click(), []);
 
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0] ?? null;
-      if (file) {
-        setSelectedFile(file);
-      }
-    },
-    []
-  );
+  const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (file) setSelectedFile(file);
+  }, []);
 
   return (
     <Modal
@@ -236,13 +210,13 @@ const AddMealModal: FC<AddMealModalProps> = ({ opened, onClose }) => {
 
         <Box style={styles.wrapperBox}>
           <Text style={styles.wrapperHeader}>Image</Text>
-          <Box style={styles.innerBoxUpload}>
+          <Box style={styles.uploadBox}>
             <Box style={styles.innerBoxButton} onClick={handleFileClick}>
-              <UploadIcon width={10} height={10} style={{ marginRight: 4 }} />
-              Upload
+              <UploadIcon width={10} height={10} />
+              <span>Upload</span>
             </Box>
             <input
-              type="file"
+              type="file" 
               accept="image/*"
               ref={fileInputRef}
               onChange={handleFileChange}
@@ -250,17 +224,11 @@ const AddMealModal: FC<AddMealModalProps> = ({ opened, onClose }) => {
             />
             <Stack style={styles.innerTextWrapper}>
               {selectedFile ? (
-                <Text style={styles.wrapperMaintext}>
-                  Selected: {selectedFile.name}
-                </Text>
+                <Text style={styles.wrapperMaintext}>Selected: {selectedFile.name}</Text>
               ) : (
                 <>
-                  <Text style={styles.wrapperMaintext}>
-                    Choose image or drag & drop it here
-                  </Text>
-                  <Text style={styles.wrapperSubtext}>
-                    JPG, JPEG, PNG and WEBP. Max 5 MB.
-                  </Text>
+                  <Text style={styles.wrapperMaintext}>Choose image or drag & drop it here</Text>
+                  <Text style={styles.wrapperSubtext}>JPG, JPEG, PNG, WEBP. Max 5 MB.</Text>
                 </>
               )}
             </Stack>
@@ -290,11 +258,11 @@ const AddMealModal: FC<AddMealModalProps> = ({ opened, onClose }) => {
 
         <Box style={styles.wrapperBox}>
           <Text style={styles.wrapperHeader}>Recipes</Text>
-          <Box style={{ ...styles.innerBox, minHeight: "80px" }}>
+          <Box style={{ ...styles.innerBox, minHeight: 80 }}>
             <Group gap={6} mb="sm" style={{ flexWrap: "wrap" }}>
-              {recipes.map((r, idx) => (
+              {recipes.map((recipe, idx) => (
                 <Box key={idx} style={styles.recipeBox}>
-                  {r}
+                  {recipe}
                 </Box>
               ))}
             </Group>

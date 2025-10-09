@@ -1,15 +1,5 @@
 import { Box, Text, Popover } from "@mantine/core";
-import {
-  useRef,
-  useImperativeHandle,
-  forwardRef,
-  useState,
-  useCallback,
-  type CSSProperties,
-  memo,
-  type FC,
-  useEffect,
-} from "react";
+import { useRef, useImperativeHandle, forwardRef, useState, useCallback, useEffect, memo, type CSSProperties, type FC, } from "react";
 import { useNavigate } from "react-router-dom";
 
 import AddIcon from "@/assets/icons/add";
@@ -108,8 +98,16 @@ const initialColumns: Column[] = [
   },
 ];
 
-const mealTypeOrder: Record<MealItem["type"], number> = { Breakfast: 1, Lunch: 2, Dinner: 3 };
-const mealStatusOrder: Record<MealItem["status"], number> = { Planned: 1, Completed: 2 };
+const mealTypeOrder: Record<MealItem["type"], number> = {
+  Breakfast: 1,
+  Lunch: 2,
+  Dinner: 3,
+};
+
+const mealStatusOrder: Record<MealItem["status"], number> = {
+  Planned: 1,
+  Completed: 2,
+};
 
 const styles: Record<string, CSSProperties> = {
   wrapper: {
@@ -117,9 +115,9 @@ const styles: Record<string, CSSProperties> = {
     height: "100%",
     overflowX: "auto",
     overflowY: "auto",
+    display: "flex",
     gap: 15,
     padding: 8,
-    display: "flex",
     scrollbarWidth: "none",
     msOverflowStyle: "none",
   },
@@ -140,10 +138,10 @@ const styles: Record<string, CSSProperties> = {
     padding: 4,
     color: "var(--light-200)",
   },
-  headerLeft: { 
-    display: "flex", 
-    alignItems: "center", 
-    gap: 4 
+  headerLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
   },
   addIcon: { 
     cursor: "pointer" 
@@ -158,10 +156,10 @@ const styles: Record<string, CSSProperties> = {
     gap: 6,
     cursor: "pointer",
   },
-  mealTop: { 
-    display: "flex", 
+  mealTop: {
+    display: "flex",
     justifyContent: "space-between",
-    alignItems: "center" 
+    alignItems: "center",
   },
   statusBox: {
     padding: "2px 6px",
@@ -169,9 +167,7 @@ const styles: Record<string, CSSProperties> = {
     backgroundColor: "var(--dark-30)",
     border: "1px solid var(--dark-10)",
     fontSize: 8,
-    fontWeight: 400,
     color: "var(--light-200)",
-    textAlign: "center",
     cursor: "pointer",
   },
   mealImage: {
@@ -182,20 +178,20 @@ const styles: Record<string, CSSProperties> = {
     objectFit: "cover",
     marginBottom: 6,
   },
-  mealInfo: { 
-    display: "flex", 
-    flexDirection: "column", 
+  mealInfo: {
+    display: "flex",
+    flexDirection: "column",
     gap: 5,
   },
-  mealName: { 
-    fontSize: 9.5, 
-    fontWeight: 450, 
-    color: "var(--light-100)" 
+  mealName: {
+    fontSize: 9.5,
+    fontWeight: 450,
+    color: "var(--light-100)",
   },
-  mealNote: { 
-    fontSize: 8.5, 
-    fontWeight: 400, 
-    color: "var(--light-100)" 
+  mealNote: {
+    fontSize: 8.5,
+    fontWeight: 400,
+    color: "var(--light-100)",
   },
   tagText: {
     fontSize: 8,
@@ -213,6 +209,7 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: 4,
     cursor: "pointer",
     backgroundColor: "transparent",
+    transition: "background-color 0.2s",
   },
 };
 
@@ -224,8 +221,12 @@ const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => (
   <Box
     style={styles.popoverItem}
     onClick={onClick}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--dark-20)")}
-    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+    onMouseEnter={(e) =>
+      (e.currentTarget.style.backgroundColor = "var(--dark-20)")
+    }
+    onMouseLeave={(e) =>
+      (e.currentTarget.style.backgroundColor = "transparent")
+    }
   >
     {label}
   </Box>
@@ -237,7 +238,13 @@ interface MealCardProps {
   toggleStatus: (day: string, mealId: number) => void;
   openEditModal: (meal: MealItem) => void;
 }
-const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus,  openEditModal }) => {
+
+const MealCard: FC<MealCardProps> = ({
+  meal,
+  day,
+  toggleStatus,
+  openEditModal,
+}) => {
   const navigate = useNavigate();
 
   const handleNavigate = useCallback(() => {
@@ -259,15 +266,13 @@ const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus,  openEditModal }
           <Box style={styles.statusBox} onClick={handleToggleStatus}>
             {meal.status}
           </Box>
-          <Box style={styles.statusBox} onClick={(e) => e.stopPropagation()}>
-            {meal.type}
-          </Box>
+          <Box style={styles.statusBox}>{meal.type}</Box>
         </Box>
 
         <Popover width={100} position="bottom" shadow="md">
           <Popover.Target>
             <Box style={{ cursor: "pointer" }} onClick={(e) => e.stopPropagation()}>
-              <MenuIcon width={10} height={10} />
+              <MenuIcon width={10} height={10} color="var(--light-100)" />
             </Box>
           </Popover.Target>
           <Popover.Dropdown
@@ -284,8 +289,11 @@ const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus,  openEditModal }
               marginTop: "-2px",
             }}
           >
-            <PopoverItem label="Edit" onClick={() => openEditModal(meal)}/>
-            <PopoverItem label="Delete" onClick={() => console.log("Delete", meal.id)} />
+            <PopoverItem label="Edit" onClick={() => openEditModal(meal)} />
+            <PopoverItem
+              label="Delete"
+              onClick={() => console.log("Delete", meal.id)}
+            />
           </Popover.Dropdown>
         </Popover>
       </Box>
@@ -298,7 +306,7 @@ const MealCard: FC<MealCardProps> = ({ meal, day, toggleStatus,  openEditModal }
             {meal.note.length > 80 ? `${meal.note.slice(0, 80)}...` : meal.note}
           </Text>
           <Box style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <TagIcon width={10} height={10} />
+            <TagIcon width={10} height={10} color="var(--light-100)" />
             <Text style={styles.tagText}>{meal.recipesCount} recipes</Text>
           </Box>
         </Box>
@@ -313,43 +321,47 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
     const [columns, setColumns] = useState<Column[]>(initialColumns);
 
     const [addModalOpened, setAddModalOpened] = useState(false);
-    const [selectedDay, setSelectedDay] = useState<string | undefined>(undefined);
+    const [selectedDay, setSelectedDay] = useState<string>();
     const [editModalOpened, setEditModalOpened] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState<MealItem | null>(null);
 
-    const openAddModal = (day: string) => {
+    const openAddModal = useCallback((day: string) => {
       setSelectedDay(day);
       setAddModalOpened(true);
-    };
-    const closeAddModal = () => {
+    }, []);
+
+    const closeAddModal = useCallback(() => {
       setAddModalOpened(false);
       setSelectedDay(undefined);
-    };
+    }, []);
 
-    const openEditModal = (meal: MealItem) => {
+    const openEditModal = useCallback((meal: MealItem) => {
       setSelectedMeal(meal);
       setEditModalOpened(true);
-    };
-    const closeEditModal = () => {
+    }, []);
+
+    const closeEditModal = useCallback(() => {
       setEditModalOpened(false);
       setSelectedMeal(null);
-    };
+    }, []);
 
     useImperativeHandle(ref, () => ({
-      scrollLeft: () => wrapperRef.current?.scrollBy({ left: -300, behavior: "smooth" }),
-      scrollRight: () => wrapperRef.current?.scrollBy({ left: 300, behavior: "smooth" }),
+      scrollLeft: () =>
+        wrapperRef.current?.scrollBy({ left: -300, behavior: "smooth" }),
+      scrollRight: () =>
+        wrapperRef.current?.scrollBy({ left: 300, behavior: "smooth" }),
       getScrollInfo: () => {
-        if (!wrapperRef.current) return { scrollLeft: 0, maxScrollLeft: 0 };
-        const scrollLeft = wrapperRef.current.scrollLeft;
-        const maxScrollLeft = wrapperRef.current.scrollWidth - wrapperRef.current.clientWidth;
-        return { scrollLeft, maxScrollLeft };
+        if (!wrapperRef.current)
+          return { scrollLeft: 0, maxScrollLeft: 0 };
+        const { scrollLeft, scrollWidth, clientWidth } = wrapperRef.current;
+        return { scrollLeft, maxScrollLeft: scrollWidth - clientWidth };
       },
     }));
 
     useEffect(() => {
       if (!arrowState || !wrapperRef.current) return;
-      const scrollBy = arrowState === "Prev" ? -300 : 300;
-      wrapperRef.current.scrollBy({ left: scrollBy, behavior: "smooth" });
+      const scrollAmount = arrowState === "Prev" ? -300 : 300;
+      wrapperRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }, [arrowState]);
 
     const toggleMealStatus = useCallback((day: string, mealId: number) => {
@@ -360,7 +372,13 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
                 ...col,
                 meals: col.meals.map((meal) =>
                   meal.id === mealId
-                    ? { ...meal, status: meal.status === "Planned" ? "Completed" : "Planned" }
+                    ? {
+                        ...meal,
+                        status:
+                          meal.status === "Planned"
+                            ? "Completed"
+                            : "Planned",
+                      }
                     : meal
                 ),
               }
@@ -376,30 +394,54 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
             <Box key={col.day} style={styles.column}>
               <Box style={styles.columnHeader}>
                 <Box style={styles.headerLeft}>
-                  <BoxIcon width={12} height={12} style={styles.addIcon} />
+                  <BoxIcon width={12} height={12} />
                   <Text style={{ fontSize: 9.5, fontWeight: 450 }}>{col.day}</Text>
                 </Box>
-                <AddIcon width={10} height={10} style={styles.addIcon} onClick={() => openAddModal(col.day)} />
+                <AddIcon
+                  width={10}
+                  height={10}
+                  style={styles.addIcon}
+                  onClick={() => openAddModal(col.day)}
+                />
               </Box>
 
               {col.meals
-                .filter((meal) => mealTypeFilter === "All" || meal.type === mealTypeFilter)
-                .filter((meal) => statusFilter === "All" || meal.status === statusFilter)
+                .filter(
+                  (meal) =>
+                    mealTypeFilter === "All" || meal.type === mealTypeFilter
+                )
+                .filter(
+                  (meal) =>
+                    statusFilter === "All" || meal.status === statusFilter
+                )
                 .sort((a, b) =>
                   mealTypeOrder[a.type] !== mealTypeOrder[b.type]
                     ? mealTypeOrder[a.type] - mealTypeOrder[b.type]
                     : mealStatusOrder[a.status] - mealStatusOrder[b.status]
                 )
                 .map((meal) => (
-                  <MealCard key={meal.id} meal={meal} day={col.day} toggleStatus={toggleMealStatus} openEditModal={openEditModal} />
+                  <MealCard
+                    key={meal.id}
+                    meal={meal}
+                    day={col.day}
+                    toggleStatus={toggleMealStatus}
+                    openEditModal={openEditModal}
+                  />
                 ))}
             </Box>
           ))}
         </Box>
 
-        <AddMealModal opened={addModalOpened} onClose={closeAddModal} day={selectedDay} />
-
-        <EditMealModal opened={editModalOpened} onClose={closeEditModal} meal={selectedMeal} />
+        <AddMealModal
+          opened={addModalOpened}
+          onClose={closeAddModal}
+          day={selectedDay}
+        />
+        <EditMealModal
+          opened={editModalOpened}
+          onClose={closeEditModal}
+          meal={selectedMeal}
+        />
       </>
     );
   }

@@ -1,17 +1,18 @@
 import { AppShell, Burger, Box } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { Outlet } from "react-router-dom";
 
 import Logo from "@/assets/logo.svg?react";
 import SideBar from "@/component/layout/sidebar";
 
-const PrivateLayout = () => {
+const PrivateLayout: React.FC = () => {
   const [opened, { toggle }] = useDisclosure();
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
 
   return (
     <AppShell
-      padding={0}
-      header={{ height: 0 }}
+      padding={10}
+      header={{ height: isSmallScreen ? 56 : 0 }}
       navbar={{
         width: 220,
         breakpoint: "sm",
@@ -19,21 +20,35 @@ const PrivateLayout = () => {
       }}
       style={{
         backgroundColor: "var(--dark-10)",
-        minHeight: "100vh",
+        height: "100vh",
+        overflow: "hidden",
       }}
     >
-      {/* Header (mobile only) */}
-      <AppShell.Header hiddenFrom="sm">
-        <div className="flex items-center justify-between p-4">
-          <Logo />
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-        </div>
-      </AppShell.Header>
+      {isSmallScreen && (
+        <AppShell.Header
+          style={{
+            backgroundColor: "var(--dark-20)",
+            borderBottom: "1px solid var(--border-100)",
+            padding: "0 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            zIndex: 200,
+          }}
+        >
+          <Logo width={25} height={25} />
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            size={12}
+            color="var(--light-100)"
+          />
+        </AppShell.Header>
+      )}
 
-      {/* Sidebar */}
       <AppShell.Navbar
         p={10}
-        pr={0}
+        pr={isSmallScreen ? 10 : 0}
         style={{
           borderRight: "none",
           backgroundColor: "var(--dark-10)",
@@ -42,25 +57,36 @@ const PrivateLayout = () => {
         <Box
           style={{
             height: "100%",
-            borderRadius: 8,
             backgroundColor: "var(--dark-20)",
-            border: "0.5px solid var(--border-100)",
+            border: "1px solid var(--border-100)",
+            borderRadius: 8,
             padding: 10,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <SideBar />
         </Box>
       </AppShell.Navbar>
 
-      {/* Main content automatically fills remaining space */}
       <AppShell.Main
         style={{
           backgroundColor: "var(--dark-10)",
-          minHeight: "100vh",
-          overflow: "auto",
+          border: "1px solid var(--border-100)",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
         }}
       >
-        <Box p={10} style={{ height: "100%", width: "100%", padding: 16 }}>
+        <Box
+          style={{
+            height: "100%",
+            overflowY: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
           <Outlet />
         </Box>
       </AppShell.Main>

@@ -1,20 +1,19 @@
+import { type FC, type CSSProperties, useState, useRef, useCallback, type KeyboardEvent, type ChangeEvent } from "react";
 import { Modal, Text, Box, Stack, Group } from "@mantine/core";
-import { type FC, type CSSProperties, useState, useRef, useCallback, useEffect, } from "react";
 
-import type { MealItem } from "./boardView";
 import UploadIcon from "@/assets/icons/upload";
 
-interface EditMealModalProps {
+interface AddRecipeProps {
   opened: boolean;
   onClose: () => void;
-  meal: MealItem | null;
+  day?: string;
 }
 
-const STATUS_CYCLE = ["Planned", "Completed"] as const;
-type Status = (typeof STATUS_CYCLE)[number];
+type Status = "Planned" | "Completed";
+type MealType = "Breakfast" | "Lunch" | "Dinner";
 
-const MEAL_TYPE_CYCLE = ["Breakfast", "Lunch", "Dinner"] as const;
-type MealType = (typeof MEAL_TYPE_CYCLE)[number];
+const STATUS_CYCLE: Status[] = ["Planned", "Completed"];
+const MEAL_TYPE_CYCLE: MealType[] = ["Breakfast", "Lunch", "Dinner"];
 
 const styles: Record<string, CSSProperties> = {
   wrapper: {
@@ -52,6 +51,17 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 450,
     color: "var(--light-100)",
     padding: "0 4px",
+  },
+  uploadBox: {
+    backgroundColor: "var(--dark-30)",
+    borderRadius: 8,
+    border: "1px solid var(--dark-10)",
+    padding: 15,
+    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   innerBoxButton: {
     display: "flex",
@@ -134,36 +144,9 @@ const styles: Record<string, CSSProperties> = {
     textAlign: "center",
     cursor: "pointer",
   },
-  imageContainer: {
-    position: "relative",
-    width: "100%",
-    borderRadius: 8,
-    overflow: "hidden",
-    backgroundColor: "var(--dark-30)",
-    border: "1px solid var(--dark-10)",
-  },
-  imagePreview: {
-    width: "100%",
-    maxHeight: 120,
-    objectFit: "cover",
-    display: "block",
-  },
-  imageOverlay: {
-    position: "absolute",
-    inset: 0,
-    background: "rgba(0, 0, 0, 0.55)",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "opacity 0.3s ease",
-    opacity: 0,
-    cursor: "pointer",
-  },
 };
 
-const EditMealModal: FC<EditMealModalProps> = ({ opened, onClose, meal }) => {
+const AddRecipe: FC<AddRecipeProps> = ({ opened, onClose }) => {
   const [status, setStatus] = useState<Status>("Planned");
   const [mealType, setMealType] = useState<MealType>("Breakfast");
   const [foodName, setFoodName] = useState("");
@@ -171,28 +154,10 @@ const EditMealModal: FC<EditMealModalProps> = ({ opened, onClose, meal }) => {
   const [recipes, setRecipes] = useState<string[]>([]);
   const [recipeInput, setRecipeInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!meal) return;
-
-    setStatus(meal.status);
-    setMealType(meal.type);
-    setFoodName(meal.name);
-    setFoodNote(meal.note);
-    setRecipes([]);
-    setRecipeInput("");
-    setSelectedFile(null);
-    setPreviewImage(meal.image ?? null);
-
-    return () => {
-      if (previewImage?.startsWith("blob:")) URL.revokeObjectURL(previewImage);
-    };
-  }, [meal, previewImage]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleAddRecipe = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter" && recipeInput.trim()) {
         e.preventDefault();
         setRecipes((prev) => [...prev, recipeInput.trim()]);
@@ -203,30 +168,18 @@ const EditMealModal: FC<EditMealModalProps> = ({ opened, onClose, meal }) => {
   );
 
   const toggleStatus = useCallback(() => {
-    setStatus((prev) => {
-      const nextIndex = (STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length;
-      return STATUS_CYCLE[nextIndex];
-    });
+    setStatus((prev) => STATUS_CYCLE[(STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length]);
   }, []);
 
   const toggleMealType = useCallback(() => {
-    setMealType((prev) => {
-      const nextIndex = (MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length;
-      return MEAL_TYPE_CYCLE[nextIndex];
-    });
+    setMealType((prev) => MEAL_TYPE_CYCLE[(MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length]);
   }, []);
 
-  const handleFileClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
+  const handleFileClick = useCallback(() => fileInputRef.current?.click(), []);
 
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
-    if (!file) return;
-
-    setSelectedFile(file);
-    const imageURL = URL.createObjectURL(file);
-    setPreviewImage(imageURL);
+    if (file) setSelectedFile(file);
   }, []);
 
   return (
@@ -257,42 +210,28 @@ const EditMealModal: FC<EditMealModalProps> = ({ opened, onClose, meal }) => {
 
         <Box style={styles.wrapperBox}>
           <Text style={styles.wrapperHeader}>Image</Text>
-          <Box style={styles.imageContainer}>
-            {previewImage && (
-              <img src={previewImage} alt="Meal preview" style={styles.imagePreview} />
-            )}
-
-            <Box
-              style={{
-                ...styles.imageOverlay,
-                opacity: previewImage ? undefined : 1,
-              }}
-              onClick={handleFileClick}
-            >
-              <Box style={styles.innerBoxButton}>
-                <UploadIcon width={10} height={10} style={{ marginRight: 4 }} />
-                {previewImage ? "Replace Image" : "Upload Image"}
-              </Box>
-
-              {!previewImage && (
-                <Box style={styles.innerTextWrapper}>
-                  <Text style={styles.wrapperMaintext}>
-                    {selectedFile
-                      ? `Selected: ${selectedFile.name}`
-                      : "Choose or drop an image"}
-                  </Text>
-                  <Text style={styles.wrapperSubtext}>JPG, JPEG, PNG, WEBP. Max 5MB.</Text>
-                </Box>
-              )}
+          <Box style={styles.uploadBox}>
+            <Box style={styles.innerBoxButton} onClick={handleFileClick}>
+              <UploadIcon width={10} height={10} />
+              <span>Upload</span>
             </Box>
-
             <input
-              type="file"
+              type="file" 
               accept="image/*"
               ref={fileInputRef}
               onChange={handleFileChange}
               style={{ display: "none" }}
             />
+            <Stack style={styles.innerTextWrapper}>
+              {selectedFile ? (
+                <Text style={styles.wrapperMaintext}>Selected: {selectedFile.name}</Text>
+              ) : (
+                <>
+                  <Text style={styles.wrapperMaintext}>Choose image or drag & drop it here</Text>
+                  <Text style={styles.wrapperSubtext}>JPG, JPEG, PNG, WEBP. Max 5 MB.</Text>
+                </>
+              )}
+            </Stack>
           </Box>
         </Box>
 
@@ -354,4 +293,4 @@ const EditMealModal: FC<EditMealModalProps> = ({ opened, onClose, meal }) => {
   );
 };
 
-export default EditMealModal;
+export default AddRecipe;

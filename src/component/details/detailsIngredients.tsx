@@ -1,14 +1,14 @@
+import { type FC, type CSSProperties, memo, useState } from "react";
 import { Box, Text, Popover } from "@mantine/core";
-import { type FC, useState, memo } from "react";
 
 import FoodIcon from "@/assets/icons/food";
 import CheckIcon from "@/assets/icons/check";
 import MenuIcon from "@/assets/icons/menu";
 
-const styles = {
-  contentWrapper: { 
-    display: "flex", 
-    width: "100%" 
+const styles: Record<string, CSSProperties> = {
+  contentWrapper: {
+    display: "flex",
+    width: "100%",
   },
   detailsWrapper: {
     flex: 1,
@@ -26,7 +26,7 @@ const styles = {
     border: "1px solid var(--dark-10)",
     padding: 15,
     gap: 20,
-    position: "relative",
+    position: "relative" as const,
   },
   detailsHeaderWrapper: {
     display: "flex",
@@ -34,19 +34,19 @@ const styles = {
     alignItems: "center",
     padding: "4px 6px 6px 6px",
   },
-  detailsHeader: { 
-    fontSize: 10, 
-    fontWeight: 450, 
-    color: "var(--light-100)" 
+  detailsHeader: {
+    fontSize: 10,
+    fontWeight: 450,
+    color: "var(--light-100)",
   },
-  ingredientRow: { 
-    display: "flex", 
-    alignItems: "center", 
-    gap: 10, 
-    position: "relative" 
+  ingredientRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    position: "relative" as const,
   },
   iconWrapper: {
-    position: "relative",
+    position: "relative" as const,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -68,10 +68,11 @@ const styles = {
     borderLeft: "1px dashed var(--dark-10)",
     zIndex: 0,
   },
-  ingredientText: { 
-    fontSize: 10, 
-    fontWeight: 400, 
-    color: "var(--light-100)" 
+  ingredientText: {
+    fontSize: 10,
+    fontWeight: 400,
+    color: "var(--light-100)",
+    cursor: "pointer",
   },
   popoverItem: {
     fontSize: 9,
@@ -98,8 +99,12 @@ const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => (
   <Box
     style={styles.popoverItem}
     onClick={onClick}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--dark-20)")}
-    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.backgroundColor = "var(--dark-20)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.backgroundColor = "transparent";
+    }}
   >
     {label}
   </Box>
@@ -107,7 +112,7 @@ const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => (
 PopoverItem.displayName = "PopoverItem";
 
 const DetailsIngredients: FC = () => {
-  const [opened, setOpened] = useState(false);
+  const [popoverOpened, setPopoverOpened] = useState(false);
   const [ingredients, setIngredients] = useState<Ingredient[]>([
     { text: "200g pasta", checked: false },
     { text: "1 cup tomato sauce", checked: false },
@@ -115,37 +120,40 @@ const DetailsIngredients: FC = () => {
     { text: "Basil leaves", checked: false },
     { text: "1 clove garlic", checked: false },
   ]);
+
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const toggleCheck = (index: number) => {
-    setIngredients(prev =>
+    setIngredients((prev) =>
       prev.map((item, i) => (i === index ? { ...item, checked: !item.checked } : item))
     );
     setSelectedIndex(index);
   };
 
   const handleAdd = () => {
-    setIngredients(prev => [...prev, { text: "", checked: false }]);
+    setIngredients((prev) => [...prev, { text: "", checked: false }]);
     setEditingIndex(ingredients.length);
-    setOpened(false);
+    setPopoverOpened(false);
   };
 
   const handleEdit = () => {
     if (selectedIndex !== null) setEditingIndex(selectedIndex);
-    setOpened(false);
+    setPopoverOpened(false);
   };
 
   const handleDelete = () => {
     if (selectedIndex !== null) {
-      setIngredients(prev => prev.filter((_, i) => i !== selectedIndex));
+      setIngredients((prev) => prev.filter((_, i) => i !== selectedIndex));
       setSelectedIndex(null);
     }
-    setOpened(false);
+    setPopoverOpened(false);
   };
 
   const updateText = (index: number, value: string) => {
-    setIngredients(prev => prev.map((item, i) => (i === index ? { ...item, text: value } : item)));
+    setIngredients((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, text: value } : item))
+    );
   };
 
   return (
@@ -153,18 +161,20 @@ const DetailsIngredients: FC = () => {
       <Box style={styles.detailsWrapper}>
         <Box style={styles.detailsHeaderWrapper}>
           <Text style={styles.detailsHeader}>Ingredients</Text>
+
           <Popover
             width={100}
             position="bottom"
             shadow="md"
-            opened={opened}
-            onClose={() => setOpened(false)}
+            opened={popoverOpened}
+            onClose={() => setPopoverOpened(false)}
           >
             <Popover.Target>
-              <Box style={{ cursor: "pointer" }} onClick={() => setOpened(o => !o)}>
+              <Box style={{ cursor: "pointer" }} onClick={() => setPopoverOpened((o) => !o)}>
                 <MenuIcon width={10} height={10} color="var(--light-100)" />
               </Box>
             </Popover.Target>
+
             <Popover.Dropdown
               style={{
                 width: 60,
@@ -187,48 +197,53 @@ const DetailsIngredients: FC = () => {
         </Box>
 
         <Box style={styles.detailsMain}>
-          {ingredients.map((item, index) => (
-            <Box key={index} style={styles.ingredientRow}>
-              <Box
-                style={{
-                  ...styles.iconWrapper,
-                  borderColor: selectedIndex === index ? "var(--light-100)" : "var(--dark-10)",
-                }}
-                onClick={() => toggleCheck(index)}
-              >
-                {item.checked ? (
-                  <CheckIcon width={14} height={14} />
-                ) : (
-                  <FoodIcon width={14} height={14} />
-                )}
-                {index < ingredients.length - 1 && <Box style={styles.dottedLine} />}
-              </Box>
+          {ingredients.map((item, index) => {
+            const isSelected = selectedIndex === index;
+            const isEditing = editingIndex === index;
 
-              {editingIndex === index ? (
-                <input
-                  type="text"
-                  value={item.text}
-                  onChange={e => updateText(index, e.currentTarget.value)}
-                  onBlur={() => setEditingIndex(null)}
-                  autoFocus
+            return (
+              <Box key={index} style={styles.ingredientRow}>
+                <Box
                   style={{
-                    fontSize: 10,
-                    padding: 0,
-                    margin: 0,
-                    border: "none",
-                    outline: "none",
-                    background: "transparent",
-                    color: "var(--light-100)",
-                    fontWeight: 450,
+                    ...styles.iconWrapper,
+                    borderColor: isSelected ? "var(--light-100)" : "var(--dark-10)",
                   }}
-                />
-              ) : (
-                <Text style={styles.ingredientText} onClick={() => setEditingIndex(index)}>
-                  {item.text}
-                </Text>
-              )}
-            </Box>
-          ))}
+                  onClick={() => toggleCheck(index)}
+                >
+                  {item.checked ? (
+                    <CheckIcon width={14} height={14} />
+                  ) : (
+                    <FoodIcon width={14} height={14} />
+                  )}
+                  {index < ingredients.length - 1 && <Box style={styles.dottedLine} />}
+                </Box>
+
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={item.text}
+                    onChange={(e) => updateText(index, e.currentTarget.value)}
+                    onBlur={() => setEditingIndex(null)}
+                    autoFocus
+                    style={{
+                      fontSize: 10,
+                      padding: 0,
+                      margin: 0,
+                      border: "none",
+                      outline: "none",
+                      background: "transparent",
+                      color: "var(--light-100)",
+                      fontWeight: 450,
+                    }}
+                  />
+                ) : (
+                  <Text style={styles.ingredientText} onClick={() => setEditingIndex(index)}>
+                    {item.text}
+                  </Text>
+                )}
+              </Box>
+            );
+          })}
         </Box>
       </Box>
     </Box>

@@ -1,43 +1,39 @@
 import { Box, Text } from "@mantine/core";
-import {
-  forwardRef,
-  memo,
-  useImperativeHandle,
-  useMemo,
-  useState,
-  type CSSProperties,
-  type FC,
-} from "react";
+import { forwardRef, memo, useImperativeHandle, useMemo, useState, type CSSProperties, type FC, } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMediaQuery } from "@mantine/hooks";
 
 import DotIcon from "@/assets/icons/dot";
 
-interface MealItem {
-  id: number;
-  name: string;
-  note: string;
-  type: "Breakfast" | "Lunch" | "Dinner";
-  status: "Planned" | "Completed";
-  image: string;
-  recipesCount: number;
-  createdDate: string;
-}
-
-interface DayMeals {
-  dayNumber: number;
-  meals: MealItem[];
-}
+type MealType = "Breakfast" | "Lunch" | "Dinner";
+type Status = "Planned" | "Completed";
 
 export interface CalendarViewHandle {
   scrollTop?: () => void;
 }
 
-interface CalendarViewProps {
+type MealItem = {
+  id: number;
+  name: string;
+  note: string;
+  type: MealType;
+  status: Status;
+  image: string;
+  recipesCount: number;
+  createdDate: string;
+};
+
+type DayMeals = {
+  dayNumber: number;
+  meals: MealItem[];
+};
+
+type CalendarViewProps = {
   year: number;
   month: number;
-  statusFilter?: "All" | "Planned" | "Completed";
-  mealTypeFilter?: "All" | "Breakfast" | "Lunch" | "Dinner";
-}
+  statusFilter?: "All" | Status;
+  mealTypeFilter?: "All" | MealType;
+};
 
 const styles: Record<string, CSSProperties> = {
   wrapper: {
@@ -131,6 +127,8 @@ const truncate = (text: string, max: number): string =>
 
 const MealCard: FC<{ meal: MealItem }> = memo(({ meal }) => {
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+  const isMediumScreen = useMediaQuery("(max-width: 1024px)");
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -142,11 +140,13 @@ const MealCard: FC<{ meal: MealItem }> = memo(({ meal }) => {
       <Box style={styles.mealHeader}>
         <Box style={styles.mealNameWrapper}>
           {meal.status === "Planned" && (
-            <DotIcon width={10} height={10} color="var(--blue-100)" />
+            <DotIcon width={10} height={10} color="var(--light-100)" />
           )}
           <Text style={styles.mealName}>{truncate(meal.name, 10)}</Text>
         </Box>
-        <Text style={styles.mealTime}>{formatTime(meal.createdDate)}</Text>
+        {!isSmallScreen && !isMediumScreen && (
+          <Text style={styles.mealTime}>{formatTime(meal.createdDate)}</Text>
+        )}
       </Box>
     </Box>
   );
@@ -159,7 +159,7 @@ const DayCell: FC<{ day: DayMeals }> = memo(({ day }) => {
   if (day.dayNumber === 0) return <Box style={styles.dayCell} />;
 
   const visibleMeals = expanded ? day.meals : day.meals.slice(0, 3);
-  const remaining = day.meals.length - 3;
+  const remainingMeals = day.meals.length - 3;
 
   return (
     <Box style={styles.dayCell} onClick={() => setExpanded((prev) => !prev)}>
@@ -167,8 +167,8 @@ const DayCell: FC<{ day: DayMeals }> = memo(({ day }) => {
       {visibleMeals.map((meal) => (
         <MealCard key={meal.id} meal={meal} />
       ))}
-      {!expanded && remaining > 0 && (
-        <Text style={styles.moreLink}>{remaining} more...</Text>
+      {!expanded && remainingMeals > 0 && (
+        <Text style={styles.moreLink}>{remainingMeals} more...</Text>
       )}
     </Box>
   );
@@ -181,7 +181,10 @@ const CalendarView = forwardRef<CalendarViewHandle, CalendarViewProps>(
       scrollTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
     }));
 
-    const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const weekdays = useMemo(
+      () => ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      []
+    );
 
     const sampleMeals: MealItem[] = useMemo(
       () => [
@@ -241,7 +244,7 @@ const CalendarView = forwardRef<CalendarViewHandle, CalendarViewProps>(
 
     const calendarDays: DayMeals[] = useMemo(() => {
       const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const firstDay = new Date(year, month, 1).getDay(); 
+      const firstDay = new Date(year, month, 1).getDay();
       const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
       const days: DayMeals[] = [];
@@ -251,15 +254,16 @@ const CalendarView = forwardRef<CalendarViewHandle, CalendarViewProps>(
       }
 
       for (let d = 1; d <= daysInMonth; d++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+        const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(
           d
         ).padStart(2, "0")}`;
         const meals = sampleMeals.filter(
           (meal) =>
-            meal.createdDate.startsWith(dateStr) &&
+            meal.createdDate.startsWith(dateKey) &&
             (mealTypeFilter === "All" || meal.type === mealTypeFilter) &&
             (statusFilter === "All" || meal.status === statusFilter)
         );
+
         days.push({ dayNumber: d, meals });
       }
 
@@ -273,9 +277,8 @@ const CalendarView = forwardRef<CalendarViewHandle, CalendarViewProps>(
             {day}
           </Box>
         ))}
-
-        {calendarDays.map((day, idx) => (
-          <DayCell key={idx} day={day} />
+        {calendarDays.map((day, index) => (
+          <DayCell key={index} day={day} />
         ))}
       </Box>
     );

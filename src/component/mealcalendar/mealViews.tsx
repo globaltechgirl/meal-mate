@@ -1,5 +1,6 @@
 import { Box, Text } from "@mantine/core";
 import { useState, useRef, useCallback, type FC, type CSSProperties } from "react";
+import { useMediaQuery } from "@mantine/hooks";
 
 import BoardView, { type BoardViewHandle } from "./boardView";
 import CalendarView from "./calendarView";
@@ -18,17 +19,21 @@ type ViewMode = "Board" | "Calendar";
 type ArrowState = "Prev" | "Next";
 type MealTypeView = "All" | "Breakfast" | "Lunch" | "Dinner";
 
+const STATUS_CYCLE: StatusFilter[] = ["All", "Planned", "Completed"];
+const MEAL_TYPE_CYCLE: MealTypeView[] = ["All", "Breakfast", "Lunch", "Dinner"];
+
 const styles: Record<string, CSSProperties> = {
   wrapper: {
     width: "100%",
-    backgroundColor: "var(--dark-20)",
-    borderRadius: 8,
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     gap: 4,
+    backgroundColor: "var(--dark-20)",
+    border: "1px solid var(--border-100)",
+    borderRadius: 8,
   },
   header: {
-    width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -45,6 +50,7 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: "50%",
     background: "var(--dark-30)",
     border: "1px solid var(--dark-10)",
+    color: "var(--light-100)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -73,81 +79,80 @@ const styles: Record<string, CSSProperties> = {
   },
 };
 
-const STATUS_CYCLE: StatusFilter[] = ["All", "Planned", "Completed"];
-const MEAL_TYPE_CYCLE: MealTypeView[] = ["All", "Breakfast", "Lunch", "Dinner"];
-
 const MealViews: FC = () => {
   const today = new Date();
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
 
   const [viewMode, setViewMode] = useState<ViewMode>("Board");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [arrowState, setArrowState] = useState<ArrowState>("Prev");
   const [mealTypeView, setMealTypeView] = useState<MealTypeView>("All");
-
-  const [currentYear, setCurrentYear] = useState<number>(today.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
 
   const boardRef = useRef<BoardViewHandle>(null);
 
-  const toggleStatusFilter = () => {
-    setStatusFilter(prev => STATUS_CYCLE[(STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length]);
-  };
+  const toggleStatusFilter = useCallback(() => {
+    setStatusFilter((prev) => {
+      const nextIndex = (STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length;
+      return STATUS_CYCLE[nextIndex];
+    });
+  }, []);
 
-  const toggleMealTypeOrMonth = () => {
+  const toggleMealTypeOrMonth = useCallback(() => {
     if (viewMode === "Calendar") {
       if (currentMonth === 11) {
         setCurrentMonth(0);
-        setCurrentYear(prev => prev + 1);
+        setCurrentYear((prev) => prev + 1);
       } else {
-        setCurrentMonth(prev => prev + 1);
+        setCurrentMonth((prev) => prev + 1);
       }
     } else {
-      setMealTypeView(
-        prev => MEAL_TYPE_CYCLE[(MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length]
-      );
+      setMealTypeView((prev) => {
+        const nextIndex = (MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length;
+        return MEAL_TYPE_CYCLE[nextIndex];
+      });
     }
-  };
+  }, [viewMode, currentMonth]);
 
-  const toggleViewMode = () => {
-    setViewMode(prev => (prev === "Board" ? "Calendar" : "Board"));
-  };
+  const toggleViewMode = useCallback(() => {
+    setViewMode((prev) => (prev === "Board" ? "Calendar" : "Board"));
+  }, []);
 
   const handleBoardArrowClick = useCallback(() => {
-    if (!boardRef.current) return;
-    const { scrollLeft, maxScrollLeft } = boardRef.current.getScrollInfo();
+    const board = boardRef.current;
+    if (!board) return;
+
+    const { scrollLeft, maxScrollLeft } = board.getScrollInfo();
 
     if (arrowState === "Prev") {
-      boardRef.current.scrollRight();
-      if (scrollLeft + 300 >= maxScrollLeft) {
-        setArrowState("Next");
-      }
+      board.scrollRight();
+      if (scrollLeft + 300 >= maxScrollLeft) setArrowState("Next");
     } else {
-      boardRef.current.scrollLeft();
-      if (scrollLeft <= 0) {
-        setArrowState("Prev");
-      }
+      board.scrollLeft();
+      if (scrollLeft <= 0) setArrowState("Prev");
     }
   }, [arrowState]);
 
-  const goPrevMonth = () => {
+  const goPrevMonth = useCallback(() => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
-      setCurrentYear(prev => prev - 1);
+      setCurrentYear((prev) => prev - 1);
     } else {
-      setCurrentMonth(prev => prev - 1);
+      setCurrentMonth((prev) => prev - 1);
     }
-  };
+  }, [currentMonth]);
 
-  const goNextMonth = () => {
+  const goNextMonth = useCallback(() => {
     if (currentMonth === 11) {
       setCurrentMonth(0);
-      setCurrentYear(prev => prev + 1);
+      setCurrentYear((prev) => prev + 1);
     } else {
-      setCurrentMonth(prev => prev + 1);
+      setCurrentMonth((prev) => prev + 1);
     }
-  };
+  }, [currentMonth]);
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     if (viewMode === "Board") {
       setStatusFilter("All");
       setArrowState("Prev");
@@ -157,39 +162,56 @@ const MealViews: FC = () => {
       setCurrentYear(today.getFullYear());
       setCurrentMonth(today.getMonth());
     }
-  };
+  }, [viewMode]);
 
-  const renderBoardArrowIcon = arrowState === "Prev" 
-    ? <ArrowNextIcon width={12} height={12} /> 
-    : <ArrowPrevIcon width={12} height={12} />;
+  const renderStatusIcon = (() => {
+    switch (statusFilter) {
+      case "Completed":
+        return <CheckIcon width={12} height={12} />;
+      case "Planned":
+        return <UncheckIcon width={12} height={12} />;
+      default:
+        return <PauseIcon width={12} height={12} />;
+    }
+  })();
+
+  const renderArrowIcon =
+    arrowState === "Prev" ? (
+      <ArrowNextIcon width={12} height={12} />
+    ) : (
+      <ArrowPrevIcon width={12} height={12} />
+    );
 
   return (
     <Box p={3} style={styles.wrapper}>
       <Box style={styles.header}>
         <Text style={styles.headerText}>Meal Calendar</Text>
+
         <Box style={styles.headerActions}>
-          <Box style={styles.filterBox} onClick={toggleViewMode}>
+          <Box
+            style={isSmallScreen ? styles.iconCircle : styles.filterBox}
+            onClick={toggleViewMode}
+          >
             <BoardIcon width={10} height={10} color="var(--light-100)" />
-            <Text style={styles.filterText}>{viewMode} View</Text>
+            {!isSmallScreen && <Text style={styles.filterText}>{viewMode} View</Text>}
           </Box>
 
-          <Box style={styles.filterBox} onClick={toggleMealTypeOrMonth}>
+          <Box
+            style={isSmallScreen ? styles.iconCircle : styles.filterBox}
+            onClick={toggleMealTypeOrMonth}
+          >
             <ClockIcon width={10} height={10} color="var(--light-100)" />
-            <Text style={styles.filterText}>
-              {viewMode === "Calendar"
-                ? `${currentYear} - ${currentMonth + 1}`
-                : mealTypeView}
-            </Text>
+            {!isSmallScreen && (
+              <Text style={styles.filterText}>
+                {viewMode === "Calendar"
+                  ? `${currentYear} - ${currentMonth + 1}`
+                  : mealTypeView}
+              </Text>
+            )}
           </Box>
 
           <Box style={styles.iconCircle} onClick={toggleStatusFilter}>
-            {statusFilter === "Completed" ? (
-              <CheckIcon width={12} height={12} />
-            ) : statusFilter === "Planned" ? (
-              <UncheckIcon width={12} height={12} />
-            ) : (
-              <PauseIcon width={12} height={12} />
-            )}
+            {renderStatusIcon}
           </Box>
 
           {viewMode === "Calendar" ? (
@@ -203,7 +225,7 @@ const MealViews: FC = () => {
             </>
           ) : (
             <Box style={styles.iconCircle} onClick={handleBoardArrowClick}>
-              {renderBoardArrowIcon}
+              {renderArrowIcon}
             </Box>
           )}
 

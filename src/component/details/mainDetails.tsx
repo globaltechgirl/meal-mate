@@ -1,14 +1,15 @@
+import { type FC, type CSSProperties, memo, useState, useCallback } from "react";
 import { Box, Text, Popover } from "@mantine/core";
-import { useState, type FC, memo } from "react";
 
 import BoardIcon from "@/assets/icons/board";
 import CheckIcon from "@/assets/icons/check";
-import DetailsView from "./detailsView";
+import DetailsView from "../details/detailsView";
 
 export type Category = "All" | "Vegetarian" | "Vegan" | "Keto" | "Desserts";
+
 const CATEGORY_LIST: Category[] = ["All", "Vegetarian", "Vegan", "Keto", "Desserts"];
 
-const styles = {
+const styles: Record<string, CSSProperties> = {
   wrapper: {
     width: "100%",
     backgroundColor: "var(--dark-20)",
@@ -82,26 +83,45 @@ interface PopoverItemProps {
   onClick: () => void;
 }
 
-const PopoverItem: FC<PopoverItemProps> = memo(({ label, selected, onClick }) => (
-  <Box
-    style={{
-      ...styles.popoverItem,
-      ...(selected ? styles.popoverItemSelected : {}),
-    }}
-    onClick={onClick}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--dark-20)")}
-    onMouseLeave={(e) =>
-      (e.currentTarget.style.backgroundColor = selected ? "var(--dark-20)" : "transparent")
-    }
-  >
-    {label}
-  </Box>
-));
+const PopoverItem: FC<PopoverItemProps> = memo(({ label, selected, onClick }) => {
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.backgroundColor = "var(--dark-20)";
+  }, []);
+
+  const handleMouseLeave = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.backgroundColor = selected ? "var(--dark-20)" : "transparent";
+    },
+    [selected]
+  );
+
+  return (
+    <Box
+      style={{
+        ...styles.popoverItem,
+        ...(selected ? styles.popoverItemSelected : {}),
+      }}
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {label}
+    </Box>
+  );
+});
 PopoverItem.displayName = "PopoverItem";
 
 const MainDetails: FC = () => {
   const [category, setCategory] = useState<Category | null>(null);
-  const [addedToCalendar, setAddedToCalendar] = useState<boolean>(false);
+  const [addedToCalendar, setAddedToCalendar] = useState(false);
+
+  const handleSelectCategory = useCallback((cat: Category) => {
+    setCategory(cat);
+  }, []);
+
+  const handleAddToCalendar = useCallback(() => {
+    setAddedToCalendar(true);
+  }, []);
 
   return (
     <Box p={3} style={styles.wrapper}>
@@ -125,16 +145,13 @@ const MainDetails: FC = () => {
                   key={cat}
                   label={cat}
                   selected={cat === category}
-                  onClick={() => setCategory(cat)}
+                  onClick={() => handleSelectCategory(cat)}
                 />
               ))}
             </Popover.Dropdown>
           </Popover>
 
-          <Box
-            style={styles.filterBox}
-            onClick={() => setAddedToCalendar(true)}
-          >
+          <Box style={styles.filterBox} onClick={handleAddToCalendar}>
             <CheckIcon width={10} height={10} color="var(--light-100)" />
             <Text style={styles.filterText}>
               {addedToCalendar ? "Added to Calendar" : "Add to Calendar"}
@@ -142,7 +159,7 @@ const MainDetails: FC = () => {
           </Box>
         </Box>
       </Box>
-      
+
       <Box>
         <DetailsView />
       </Box>
