@@ -1,187 +1,149 @@
-import { type FC, type CSSProperties, useState, useRef, useCallback, type KeyboardEvent, type ChangeEvent } from "react";
-import { Modal, Text, Box, Stack, Group } from "@mantine/core";
-
-import UploadIcon from "@/assets/icons/upload";
+import { type FC, type CSSProperties, useState, useEffect } from "react";
+import { Modal, Text, Box, Stack } from "@mantine/core";
+import CalendarIcon from "@/assets/icons/calendar";
+import { type Item } from "./shoppingViews";
 
 interface EditRecipeProps {
   opened: boolean;
   onClose: () => void;
-  day?: string;
-  item: Item;
+  item: Item | null;
 }
 
 type Status = "Planned" | "Completed";
-type MealType = "Breakfast" | "Lunch" | "Dinner";
 
 const STATUS_CYCLE: Status[] = ["Planned", "Completed"];
-const MEAL_TYPE_CYCLE: MealType[] = ["Breakfast", "Lunch", "Dinner"];
 
 const styles: Record<string, CSSProperties> = {
-  wrapper: {
+  actionButton: {
+    backgroundColor: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 6,
+    color: "var(--light-200)",
+    cursor: "pointer",
+    fontSize: 8.5,
+    fontWeight: 400,
+    padding: "4px 10px",
+    textAlign: "center",
+  },
+  actionRow: {
+    display: "flex",
+    gap: 10,
+    justifyContent: "flex-end",
+  },
+  innerBox: {
+    backgroundColor: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 8,
+    color: "var(--light-100)",
+    fontSize: 8.5,
+    fontWeight: 400,
+    padding: 6,
+  },
+  input: {
     width: "100%",
+  },
+  textarea: {
+    minHeight: 60,
+    resize: "vertical",
+    width: "100%",
+  },
+  timeBox: {
+    alignItems: "center",
+    backgroundColor: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 6,
+    display: "flex",
+    flexGrow: 1,
+    flexShrink: 1,
+    gap: 4,
+    minWidth: 100,
+    padding: "6px 8px",
+  },
+  timeText: {
+    color: "var(--light-200)",
+    fontSize: 8.5,
+    fontWeight: 400,
+  },
+  timeWrapper: {
+    alignItems: "center",
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 8,
+    justifyContent: "space-between",
+  },
+  toggleBox: {
+    backgroundColor: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 6,
+    color: "var(--light-100)",
+    cursor: "pointer",
+    fontSize: 8,
+    fontWeight: 400,
+    padding: "2px 6px",
+    textAlign: "center",
+  },
+  toggleRow: {
+    alignItems: "center",
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  wrapper: {
     backgroundColor: "transparent",
     display: "flex",
     flexDirection: "column",
     gap: 4,
+    width: "100%",
+  },
+  wrapperBox: {
+    backgroundColor: "var(--dark-20)",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 8,
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+    padding: 4,
+  },
+  wrapperHeader: {
+    color: "var(--light-100)",
+    fontSize: 8.5,
+    fontWeight: 450,
+    padding: "0 4px",
   },
   wrapperMain: {
     display: "flex",
     flexDirection: "column",
     gap: 6,
   },
-  wrapperBox: {
-    backgroundColor: "var(--dark-20)",
-    borderRadius: 8,
-    border: "1px solid var(--dark-10)",
-    padding: 4,
-    display: "flex",
-    flexDirection: "column",
-    gap: 4,
-  },
-  innerBox: {
-    backgroundColor: "var(--dark-30)",
-    borderRadius: 8,
-    border: "1px solid var(--dark-10)",
-    padding: 6,
-    fontSize: 8.5,
-    fontWeight: 400,
-    color: "var(--light-100)",
-  },
-  wrapperHeader: {
-    fontSize: 8.5,
-    fontWeight: 450,
-    color: "var(--light-100)",
-    padding: "0 4px",
-  },
-  uploadBox: {
-    backgroundColor: "var(--dark-30)",
-    borderRadius: 8,
-    border: "1px solid var(--dark-10)",
-    padding: 15,
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  innerBoxButton: {
-    display: "flex",
-    alignItems: "center",
-    gap: 4,
-    width: "fit-content",
-    padding: "6px 12px",
-    borderRadius: 8,
-    backgroundColor: "var(--dark-20)",
-    border: "1px solid var(--dark-10)",
-    fontSize: 8.5,
-    fontWeight: 400,
-    color: "var(--light-200)",
-    cursor: "pointer",
-  },
-  innerTextWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 4,
-    marginTop: 10,
-  },
-  wrapperMaintext: {
-    fontSize: 8.5,
-    fontWeight: 400,
-    color: "var(--light-100)",
-  },
-  wrapperSubtext: {
-    fontSize: 8,
-    fontWeight: 400,
-    color: "var(--light-200)",
-  },
-  toggleRow: {
-    display: "flex",
-    gap: 12,
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
-  toggleBox: {
-    padding: "2px 6px",
-    borderRadius: 6,
-    backgroundColor: "var(--dark-30)",
-    border: "1px solid var(--dark-10)",
-    fontSize: 8,
-    fontWeight: 400,
-    color: "var(--light-100)",
-    cursor: "pointer",
-    textAlign: "center",
-  },
-  input: {
-    width: "100%",
-  },
-  textarea: {
-    width: "100%",
-    resize: "vertical",
-    minHeight: 60,
-  },
-  recipeBox: {
-    padding: "2px 6px",
-    borderRadius: 6,
-    backgroundColor: "var(--dark-20)",
-    border: "1px solid var(--dark-10)",
-    fontSize: 8,
-    fontWeight: 400,
-    color: "var(--light-100)",
-    textAlign: "center",
-  },
-  actionRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 10,
-  },
-  actionButton: {
-    padding: "4px 10px",
-    borderRadius: 6,
-    backgroundColor: "var(--dark-30)",
-    border: "1px solid var(--dark-10)",
-    fontSize: 8.5,
-    fontWeight: 400,
-    color: "var(--light-200)",
-    textAlign: "center",
-    cursor: "pointer",
-  },
 };
 
 const EditRecipe: FC<EditRecipeProps> = ({ opened, onClose, item }) => {
   const [status, setStatus] = useState<Status>("Planned");
-  const [mealType, setMealType] = useState<MealType>("Breakfast");
   const [foodName, setFoodName] = useState("");
-  const [foodNote, setFoodNote] = useState("");
-  const [recipes, setRecipes] = useState<string[]>([]);
-  const [recipeInput, setRecipeInput] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [shoppingNote, setShoppingNote] = useState("");
+  const [source, setSource] = useState("");
+  const [qty, setQty] = useState<number>(1);
+  const [amount, setAmount] = useState<number>(0);
+  const [date, setDate] = useState<string>("");
 
-  const handleEditRecipe = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter" && recipeInput.trim()) {
-        e.preventDefault();
-        setRecipes((prev) => [...prev, recipeInput.trim()]);
-        setRecipeInput("");
-      }
-    },
-    [recipeInput]
-  );
+  useEffect(() => {
+    if (!item) return;
 
-  const toggleStatus = useCallback(() => {
-    setStatus((prev) => STATUS_CYCLE[(STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length]);
-  }, []);
+    setStatus(item.status === "Complete" ? "Completed" : "Planned");
+    setFoodName(item.name ?? "");
+    setShoppingNote(item.note ?? "");
+    setSource(item.source ?? "");
+    setQty(item.qty ?? 1);
+    setAmount(item.amount ?? 0);
+    setDate(item.createdAt ?? "");
+  }, [item]);
 
-  const toggleMealType = useCallback(() => {
-    setMealType((prev) => MEAL_TYPE_CYCLE[(MEAL_TYPE_CYCLE.indexOf(prev) + 1) % MEAL_TYPE_CYCLE.length]);
-  }, []);
-
-  const handleFileClick = useCallback(() => fileInputRef.current?.click(), []);
-
-  const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    if (file) setSelectedFile(file);
-  }, []);
+  const toggleStatus = () => {
+    setStatus(
+      (prev) =>
+        STATUS_CYCLE[(STATUS_CYCLE.indexOf(prev) + 1) % STATUS_CYCLE.length]
+    );
+  };
 
   return (
     <Modal
@@ -190,49 +152,13 @@ const EditRecipe: FC<EditRecipeProps> = ({ opened, onClose, item }) => {
       centered
       size="md"
       withCloseButton={false}
-      styles={{
-        content: styles.wrapper,
-        body: { padding: 0 },
-      }}
-      overlayProps={{
-        backgroundOpacity: 0.55,
-        blur: 5,
-      }}
+      styles={{ content: styles.wrapper, body: { padding: 0 } }}
+      overlayProps={{ backgroundOpacity: 0.55, blur: 5 }}
     >
       <Stack style={styles.wrapperMain}>
         <Box style={styles.toggleRow}>
           <Box style={styles.toggleBox} onClick={toggleStatus}>
             {status}
-          </Box>
-          <Box style={styles.toggleBox} onClick={toggleMealType}>
-            {mealType}
-          </Box>
-        </Box>
-
-        <Box style={styles.wrapperBox}>
-          <Text style={styles.wrapperHeader}>Image</Text>
-          <Box style={styles.uploadBox}>
-            <Box style={styles.innerBoxButton} onClick={handleFileClick}>
-              <UploadIcon width={10} height={10} />
-              <span>Upload</span>
-            </Box>
-            <input
-              type="file" 
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-            <Stack style={styles.innerTextWrapper}>
-              {selectedFile ? (
-                <Text style={styles.wrapperMaintext}>Selected: {selectedFile.name}</Text>
-              ) : (
-                <>
-                  <Text style={styles.wrapperMaintext}>Choose image or drag & drop it here</Text>
-                  <Text style={styles.wrapperSubtext}>JPG, JPEG, PNG, WEBP. Max 5 MB.</Text>
-                </>
-              )}
-            </Stack>
           </Box>
         </Box>
 
@@ -248,38 +174,82 @@ const EditRecipe: FC<EditRecipeProps> = ({ opened, onClose, item }) => {
         </Box>
 
         <Box style={styles.wrapperBox}>
-          <Text style={styles.wrapperHeader}>Food Description</Text>
+          <Text style={styles.wrapperHeader}>Shopping Note</Text>
           <textarea
-            placeholder="Write food note"
+            placeholder="Write note or description"
             style={{ ...styles.innerBox, ...styles.textarea }}
-            value={foodNote}
-            onChange={(e) => setFoodNote(e.target.value)}
+            value={shoppingNote}
+            onChange={(e) => setShoppingNote(e.target.value)}
           />
         </Box>
 
         <Box style={styles.wrapperBox}>
-          <Text style={styles.wrapperHeader}>Recipes</Text>
-          <Box style={{ ...styles.innerBox, minHeight: 80 }}>
-            <Group gap={6} mb="sm" style={{ flexWrap: "wrap" }}>
-              {recipes.map((recipe, idx) => (
-                <Box key={idx} style={styles.recipeBox}>
-                  {recipe}
-                </Box>
-              ))}
-            </Group>
-            <input
-              type="text"
-              placeholder="Write recipe and press Enter"
-              value={recipeInput}
-              onChange={(e) => setRecipeInput(e.target.value)}
-              onKeyDown={handleEditRecipe}
-              style={{
-                width: "100%",
-                border: "none",
-                outline: "none",
-                background: "transparent",
-              }}
-            />
+          <Text style={styles.wrapperHeader}>Source</Text>
+          <input
+            type="text"
+            placeholder="Write source"
+            style={{ ...styles.innerBox, ...styles.input }}
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+          />
+        </Box>
+
+        <Box style={styles.wrapperBox}>
+          <Text style={styles.wrapperHeader}>Details</Text>
+          <Box style={styles.timeWrapper}>
+            <Box style={{ ...styles.timeBox, flexBasis: "10%" }}>
+              <Text style={styles.timeText}>Qty :</Text>
+              <input
+                type="number"
+                min={1}
+                value={qty}
+                onChange={(e) => setQty(Number(e.target.value))}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--light-200)",
+                  fontSize: 8.5,
+                  outline: "none",
+                  width: 40,
+                }}
+              />
+            </Box>
+
+            <Box style={{ ...styles.timeBox, flexBasis: "30%" }}>
+              <Text style={styles.timeText}>Amount :</Text>
+              <input
+                type="number"
+                min={0}
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--light-200)",
+                  fontSize: 8.5,
+                  outline: "none",
+                  width: 60,
+                }}
+              />
+            </Box>
+
+            <Box style={{ ...styles.timeBox, flexBasis: "40%" }}>
+              <CalendarIcon width={10} height={10} color="var(--light-200)" />
+              <Text style={styles.timeText}>Date :</Text>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--light-200)",
+                  flexGrow: 1,
+                  fontSize: 8.5,
+                  outline: "none",
+                }}
+              />
+            </Box>
           </Box>
         </Box>
 

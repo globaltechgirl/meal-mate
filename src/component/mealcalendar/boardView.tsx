@@ -13,8 +13,8 @@ import BestImg3 from "@/assets/best-img3.jpg";
 import BestImg4 from "@/assets/best-img4.jpg";
 import BestImg5 from "@/assets/best-img5.jpg";
 
-import AddMealModal from "./addMealModal";
-import EditMealModal from "./editMealModel";
+import AddMealModal from "./addMeal";
+import EditMealModal from "./editMeal";
 
 export interface BoardViewHandle {
   scrollLeft: () => void;

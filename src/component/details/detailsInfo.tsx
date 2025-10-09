@@ -276,7 +276,7 @@ const DetailsInfo: FC = () => {
                     />
                   ) : (
                     <Text style={styles.timeText} onClick={() => setIsEditingDate(true)}>
-                      Last made: {new Date(lastMade).toLocaleDateString("en-US")}
+                      Last made : {new Date(lastMade).toLocaleDateString("en-US")}
                     </Text>
                   )}
                 </Box>
@@ -294,7 +294,7 @@ const DetailsInfo: FC = () => {
                     />
                   ) : (
                     <Text style={styles.timeText} onClick={() => setIsEditingTime(true)}>
-                      Total time: {totalTime}
+                      Total time : {totalTime}
                     </Text>
                   )}
                 </Box>

@@ -42,14 +42,15 @@ const DATE_OPTIONS: DateFilter[] = ["Today", "Yesterday", "This Week", "This Mon
 const styles: Record<string, CSSProperties> = {
   wrapper: {
     width: "100%",
-    backgroundColor: "var(--dark-20)",
-    borderRadius: 8,
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     gap: 4,
+    backgroundColor: "var(--dark-20)",
+    border: "1px solid var(--border-100)",
+    borderRadius: 8,
   },
   header: {
-    width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -63,10 +64,10 @@ const styles: Record<string, CSSProperties> = {
   iconCircle: {
     width: 24,
     height: 24,
-    color: "var(--light-100)",
     borderRadius: "50%",
     background: "var(--dark-30)",
     border: "1px solid var(--dark-10)",
+    color: "var(--light-100)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -79,6 +80,7 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: 6,
     padding: "0 8px 0 6px",
     background: "var(--dark-30)",
+    cursor: "pointer",
     height: 24,
   },
 };
