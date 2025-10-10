@@ -104,7 +104,7 @@ const UserProfileHeader: FC = () => {
       display: "flex",
       flexDirection: "column",
       color: "var(--light-100)",
-      width: "30%",
+      width: isSmallScreen ? "100%" : isMediumScreen ? "40%" : "30%",
     },
     labelTitle: { 
       fontWeight: 450, 
