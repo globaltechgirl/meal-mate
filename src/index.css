@@ -2,47 +2,62 @@
 @import "tailwindcss";
 
 @layer base {
-  /*  Default (Light) Theme */
-  :root {
+  :root,
+  .dark-theme {
     --light-100: #FFFFFF;
     --light-200: #FFF2EB;
     --light-300: #FFE5D8;
     --light-400: #FFD8C4;
     --light-500: #FFCBB1;
+
     --mild-100: #FFB089;
     --mild-200: #FF9662;
     --mild-300: #FF7C3B;
     --mild-400: #D0642F;
     --mild-500: #A04D23;
+
     --dark-100: #713518;
     --dark-200: #592912;
     --dark-300: #411E0C;
     --dark-400: #2A1206;
     --dark-500: #120600;
-    --dark-10: #120E0D; 
+
+    --dark-10: #120E0D;
     --dark-20: #1a1414;
     --dark-30: #251b19;
     --border-100: #22201f;
-  }
-}
 
-@theme {
-  --color-light-100: var(--light-100);
-  --color-light-200: var(--light-200);
-  --color-light-300: var(--light-300);
-  --color-light-400: var(--light-400);
-  --color-light-500: var(--light-500);
-  --color-mild-100: var(--mild-100);
-  --color-mild-200: var(--mild-200);
-  --color-mild-300: var(--mild-300);
-  --color-mild-400: var(--mild-400);
-  --color-mild-500: var(--mild-500);
-  --color-dark-100: var(--dark-100);
-  --color-dark-200: var(--dark-200);
-  --color-dark-300: var(--dark-300);
-  --color-dark-400: var(--dark-400);
-  --color-dark-500: var(--dark-500);
-  --color-dark-600: var(--dark-600);
+    --background: var(--dark-10);
+    --foreground: var(--light-100);
+  }
+
+  .light-theme {
+    --light-100: #120600;
+    --light-200: #2A1206;
+    --light-300: #411E0C;
+    --light-400: #592912;
+    --light-500: #713518;
+
+    --mild-100: #A04D23;
+    --mild-200: #D0642F;
+    --mild-300: #FF7C3B;
+    --mild-400: #FF9662;
+    --mild-500: #FFB089;
+
+    --dark-100: #FFCBB1;
+    --dark-200: #FFD8C4;
+    --dark-300: #FFE5D8;
+    --dark-400: #FFF2EB;
+    --dark-500: #FFFFFF;
+
+    --dark-10: #FFFFFF;
+    --dark-20: #FFF9F6;
+    --dark-30: #FFF2EB;
+    --border-100: #E5E0DC;
+
+    --background: var(--dark-10);
+    --foreground: var(--light-100);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -53,9 +68,10 @@
 }
 
 body {
-  background: white;
-  color: black;
+  background: var(--background);
+  color: var(--foreground);
   font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
+  transition: background 0.3s ease, color 0.3s ease;
 }

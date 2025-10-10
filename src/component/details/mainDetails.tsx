@@ -12,15 +12,15 @@ const CATEGORY_LIST: Category[] = ["All", "Vegetarian", "Vegan", "Keto", "Desser
 const styles: Record<string, CSSProperties> = {
   wrapper: {
     width: "100%",
-    backgroundColor: "var(--dark-20)",
-    borderRadius: 8,
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     gap: 4,
-    marginBottom: 8,
+    backgroundColor: "var(--dark-20)",
+    border: "1px solid var(--border-100)",
+    borderRadius: 8,
   },
   header: {
-    width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
