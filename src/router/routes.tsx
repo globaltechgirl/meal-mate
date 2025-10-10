@@ -10,7 +10,6 @@ import MealCalendar from "@/pages/mealCalendar";
 import Recipes from "@/pages/recipes";
 import ShoppingList from "@/pages/shoppingList";
 import Profile from "@/pages/profile";
-import Dashboard from "@/pages/dashboard";
 import AuthGuard from "@/router/authGuard";
 import { ROUTES } from "@/utils/constants";
 import RecipesDetails from "@/pages/recipesDetails";
@@ -48,7 +47,6 @@ const routes: RouteObject[] = [
           { path: ROUTES.SHOPPING_LIST.replace("/", ""), element: <ShoppingList /> },
           { path: ROUTES.RECIPES_DETAILS.replace("/", ""), element: <RecipesDetails /> },
           { path: ROUTES.PROFILE.replace("/", ""), element: <Profile /> },
-          { path: ROUTES.DASHBOARD.replace("/", ""), element: <Dashboard /> },
           { path: "*", element: <Navigate to={ROUTES.HOME} replace /> },
         ],
       },
