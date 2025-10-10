@@ -1,5 +1,5 @@
 import { type FC, memo, useCallback, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Box, Popover, Text } from "@mantine/core";
 
 import { NAV_LINKS } from "@/utils/constants";
@@ -107,15 +107,16 @@ PopoverItem.displayName = "PopoverItem";
 
 const Sidebar: FC = () => {
   const [opened, setOpened] = useState(false);
+  const navigate = useNavigate();
 
   const handleTogglePopover = useCallback(() => {
     setOpened((prev) => !prev);
   }, []);
 
   const handleViewProfile = useCallback(() => {
-    console.log("View Profile");
     setOpened(false);
-  }, []);
+    navigate("/profile"); 
+  }, [navigate]);
 
   const handleLogout = useCallback(() => {
     console.log("Logout");
