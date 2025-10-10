@@ -3,7 +3,6 @@ import { Box, Text, Avatar } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 import SearchIcon from "@/assets/icons/search";
-import BellIcon from "@/assets/icons/bell";
 import SunIcon from "@/assets/icons/sun";
 import MoonIcon from "@/assets/icons/moon";
 import ProfileImg from "@/assets/profile-img.svg";
@@ -160,10 +159,6 @@ const Info: FC = () => {
                 style={styles.searchInput}
               />
             </Box>
-
-            <IconCircle>
-              <BellIcon width={12} height={12} color="var(--light-100)" />
-            </IconCircle>
 
             <IconCircle onClick={toggleTheme}>
               <Box style={{ position: "relative", width: 12, height: 12 }}>
