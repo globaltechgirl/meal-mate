@@ -30,7 +30,7 @@ const UserProfileHeader: FC = () => {
       border: "1px solid var(--border-100)",
       borderRadius: 12,
       padding: 20,
-      paddingBottom: isSmallScreen ? 0 : 30,
+      paddingBottom: 30,
       position: "relative",
     },
     backgroundWrapper: {
