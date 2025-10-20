@@ -123,7 +123,7 @@ const Login: FC = () => {
 
         <Box style={styles.formWrapper}>
           <Box style={styles.formMain}>
-            <Text style={styles.label}>Email Address</Text>
+            <Text style={styles.label}>Login</Text>
             <input
               type="text"
               placeholder="Username"
