@@ -64,7 +64,9 @@ const useMealPlans = () => {
     fetchMealPlans();
   }, []);
 
-  return { mealPlans, fetchMealPlans, fetchMealPlanDetail, createMealPlan, updateMealPlan, deleteMealPlan, loading, error };
+  return {  mealPlans, fetchMealPlans, fetchMealPlanDetail, createMealPlan, updateMealPlan, deleteMealPlan, loading, error };
 };
 
 export default useMealPlans;
+
+
