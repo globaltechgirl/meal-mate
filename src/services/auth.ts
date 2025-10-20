@@ -9,6 +9,7 @@ const useAuthService = () => {
   const api = useAxiosApi(ApiAuthModes.NoAuth);
 
   const login = async (data: LoginValues): Promise<ApiResponse<LoginResponse>> => {
+    console.log("Sending to API:", data);
     const res: AxiosResponse<ApiResponse<LoginResponse>> = await api.post(
       ENDPOINTS.AUTH.LOGIN,
       data

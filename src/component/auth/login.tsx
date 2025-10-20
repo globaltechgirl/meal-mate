@@ -31,6 +31,7 @@ const Login: FC = () => {
 
   const handleSubmit = useCallback(async () => {
     try {
+      console.log("Login payload:", { username, password });
       await handleLogin({ username, password } as LoginValues);
       navigate("/meal-calendar");
     } catch (err) {
