@@ -5,9 +5,12 @@ import { Box, Button, Text } from "@mantine/core";
 import { Eye, EyeOff } from "tabler-icons-react";
 
 import FrameLogo3 from "@/assets/frame-logo3.svg?react";
+import useAuth from "@/hooks/use-login";
+import type { LoginValues } from "@/types/auth";
 
 const Create: FC = () => {
   const navigate = useNavigate();
+  const { handleRegister, loading, error } = useAuth();
 
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
   const isMediumScreen = useMediaQuery("(max-width: 1024px)");
@@ -19,15 +22,33 @@ const Create: FC = () => {
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = useCallback(
-    () => setPasswordVisible((prev) => !prev), []
+    () => setPasswordVisible((prev) => !prev),
+    []
   );
   const toggleConfirmPasswordVisibility = useCallback(
-    () => setConfirmPasswordVisible((prev) => !prev), []
+    () => setConfirmPasswordVisible((prev) => !prev),
+    []
   );
+
   const handleNavigate = useCallback(
     (path: string) => () => navigate(path),
     [navigate]
   );
+
+  const handleSubmit = useCallback(async () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const payload: LoginValues = { email, password };
+    try {
+      await handleRegister(payload);
+      navigate("/meal-calendar");
+    } catch (err) {
+      console.error(err);
+    }
+  }, [email, password, confirmPassword, handleRegister, navigate]);
 
   const styles: Record<string, CSSProperties> = {
     container: {
@@ -41,11 +62,7 @@ const Create: FC = () => {
       background: "var(--dark-30)",
       border: "1px solid var(--dark-10)",
     },
-    header: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-    },
+    header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start" },
     poweredBy: {
       padding: "2px 6px",
       borderRadius: 4,
@@ -56,25 +73,9 @@ const Create: FC = () => {
       color: "var(--light-100)",
       textAlign: "center",
     },
-    main: {
-      flex: 1,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      textAlign: "center",
-      gap: 30,
-    },
-    welcomeText: {
-      fontSize: 16,
-      fontWeight: 600,
-      color: "var(--light-100)",
-    },
-    subtitle: {
-      marginTop: 4,
-      fontSize: 9,
-      fontWeight: 500,
-      color: "var(--light-200)",
-    },
+    main: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center", gap: 30 },
+    welcomeText: { fontSize: 16, fontWeight: 600, color: "var(--light-100)" },
+    subtitle: { marginTop: 4, fontSize: 9, fontWeight: 500, color: "var(--light-200)" },
     formWrapper: {
       display: "flex",
       flexDirection: "column",
@@ -83,17 +84,8 @@ const Create: FC = () => {
       margin: "0 auto",
       textAlign: "left",
     },
-    formMain: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 15,
-    },
-    label: {
-      fontSize: 9,
-      fontWeight: 450,
-      color: "var(--light-100)",
-      marginBottom: -5,
-    },
+    formMain: { display: "flex", flexDirection: "column", gap: 15 },
+    label: { fontSize: 9, fontWeight: 450, color: "var(--light-100)", marginBottom: -5 },
     input: {
       width: "100%",
       boxSizing: "border-box",
@@ -106,17 +98,8 @@ const Create: FC = () => {
       border: "1px solid var(--dark-10)",
       outline: "none",
     },
-    passwordWrapper: {
-      position: "relative",
-      display: "flex",
-      alignItems: "center",
-    },
-    passwordIcon: {
-      position: "absolute",
-      right: 15,
-      cursor: "pointer",
-      color: "var(--light-100)",
-    },
+    passwordWrapper: { position: "relative", display: "flex", alignItems: "center" },
+    passwordIcon: { position: "absolute", right: 15, cursor: "pointer", color: "var(--light-100)" },
     button: {
       marginTop: 10,
       width: "100%",
@@ -127,38 +110,13 @@ const Create: FC = () => {
       backgroundColor: "var(--dark-10)",
       border: "0.5px solid var(--dark-10)",
       cursor: "pointer",
-      boxShadow:
-        "inset 1px 1px 2px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(0, 0, 0, 0.15)",
+      boxShadow: "inset 1px 1px 2px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(0, 0, 0, 0.15)",
       transition: "opacity 0.2s ease",
     },
-    formLink: {
-      marginTop: 10,
-      textAlign: "center",
-      cursor: "pointer",
-      fontSize: 8.5,
-      fontWeight: 500,
-      color: "var(--light-200)",
-      textDecoration: "underline",
-      textUnderlineOffset: 2.5,
-    },
-    footer: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    footerText: {
-      fontSize: 8.5,
-      fontWeight: 400,
-      color: "var(--light-100)",
-    },
-    registerLink: {
-      fontSize: 8.5,
-      fontWeight: 400,
-      color: "var(--light-100)",
-      cursor: "pointer",
-      textDecoration: "underline",
-      textUnderlineOffset: 2.5,
-    },
+    formLink: { marginTop: 10, textAlign: "center", cursor: "pointer", fontSize: 8.5, fontWeight: 500, color: "var(--light-200)", textDecoration: "underline", textUnderlineOffset: 2.5 },
+    footer: { display: "flex", justifyContent: "space-between", alignItems: "center" },
+    footerText: { fontSize: 8.5, fontWeight: 400, color: "var(--light-100)" },
+    registerLink: { fontSize: 8.5, fontWeight: 400, color: "var(--light-100)", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 2.5 },
   };
 
   return (
@@ -171,9 +129,7 @@ const Create: FC = () => {
       <Box style={styles.main}>
         <Box>
           <Text style={styles.welcomeText}>Create Your Account</Text>
-          <Text style={styles.subtitle}>
-            Personalized meal planning — sign up to start
-          </Text>
+          <Text style={styles.subtitle}>Personalized meal planning — sign up to start</Text>
         </Box>
 
         <Box style={styles.formWrapper}>
@@ -197,17 +153,9 @@ const Create: FC = () => {
                 style={styles.input}
               />
               {passwordVisible ? (
-                <EyeOff
-                  size={10}
-                  style={styles.passwordIcon}
-                  onClick={togglePasswordVisibility}
-                />
+                <EyeOff size={10} style={styles.passwordIcon} onClick={togglePasswordVisibility} />
               ) : (
-                <Eye
-                  size={10}
-                  style={styles.passwordIcon}
-                  onClick={togglePasswordVisibility}
-                />
+                <Eye size={10} style={styles.passwordIcon} onClick={togglePasswordVisibility} />
               )}
             </Box>
 
@@ -221,29 +169,18 @@ const Create: FC = () => {
                 style={styles.input}
               />
               {confirmPasswordVisible ? (
-                <EyeOff
-                  size={10}
-                  style={styles.passwordIcon}
-                  onClick={toggleConfirmPasswordVisibility}
-                />
+                <EyeOff size={10} style={styles.passwordIcon} onClick={toggleConfirmPasswordVisibility} />
               ) : (
-                <Eye
-                  size={10}
-                  style={styles.passwordIcon}
-                  onClick={toggleConfirmPasswordVisibility}
-                />
+                <Eye size={10} style={styles.passwordIcon} onClick={toggleConfirmPasswordVisibility} />
               )}
             </Box>
           </Box>
 
-          <Button
-            style={styles.button}
-            onClick={handleNavigate("/meal-calendar")}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-          >
-            Register
+          <Button style={styles.button} onClick={handleSubmit} disabled={loading}>
+            {loading ? "Registering..." : "Register"}
           </Button>
+
+          {error && <Text style={{ color: "red", fontSize: 9 }}>{error}</Text>}
 
           <Text style={styles.formLink}>Terms & Privacy Policy</Text>
         </Box>
