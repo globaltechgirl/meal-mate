@@ -15,7 +15,7 @@ const Login: FC = () => {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
   const isMediumScreen = useMediaQuery("(max-width: 1024px)");
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -31,12 +31,12 @@ const Login: FC = () => {
 
   const handleSubmit = useCallback(async () => {
     try {
-      await handleLogin({ email, password } as LoginValues);
+      await handleLogin({ username, password } as LoginValues);
       navigate("/meal-calendar");
     } catch (err) {
       console.error(err);
     }
-  }, [email, password, handleLogin, navigate]);
+  }, [username, password, handleLogin, navigate]);
 
   const styles: Record<string, CSSProperties> = {
     container: {
@@ -124,10 +124,10 @@ const Login: FC = () => {
           <Box style={styles.formMain}>
             <Text style={styles.label}>Email Address</Text>
             <input
-              type="email"
-              placeholder="name@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               style={styles.input}
             />
 

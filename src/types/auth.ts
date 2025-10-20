@@ -7,7 +7,7 @@ export interface AuthState {
 }
 
 export interface LoginValues {
-  email: string;
+  username: string;
   password: string;
 }
 
