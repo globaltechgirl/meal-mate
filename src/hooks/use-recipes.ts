@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import useApiService from "@/services/api";
-import type { Recipe } from "@/types/recipes";
+import { useAxiosApi } from "@/api/api";
+import type { RecipeItem } from "@/types/recipes";
+import { ApiAuthModes } from "@/types/enums";
 
 const useRecipes = () => {
-  const api = useApiService();
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const api = useAxiosApi(ApiAuthModes.BearerToken); 
+  const [recipes, setRecipes] = useState<RecipeItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

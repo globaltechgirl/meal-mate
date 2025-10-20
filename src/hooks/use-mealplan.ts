@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import useApiService from "@/services/api";
-import type { MealPlan } from "@/types/mealplans";
+import { useAxiosApi } from "@/api/api";
+import type { MealItem } from "@/types/mealplans";
+import { ApiAuthModes } from "@/types/enums";
 
 const useMealPlans = () => {
-  const api = useApiService();
-  const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+  const api = useAxiosApi(ApiAuthModes.BearerToken); 
+  const [mealPlans, setMealPlans] = useState<MealItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +31,7 @@ const useMealPlans = () => {
     }
   };
 
-  const createMealPlan = async (data: Partial<MealPlan>) => {
+  const createMealPlan = async (data: Partial<MealItem>) => {
     try {
       const res = await api.post("/api/mealplans/", data);
       fetchMealPlans();
@@ -40,7 +41,7 @@ const useMealPlans = () => {
     }
   };
 
-  const updateMealPlan = async (id: string, data: Partial<MealPlan>) => {
+  const updateMealPlan = async (id: string, data: Partial<MealItem>) => {
     try {
       const res = await api.put(`/api/mealplans/${id}/`, data);
       fetchMealPlans();
