@@ -2,24 +2,24 @@ import type { AxiosResponse } from "axios";
 import { useAxiosApi } from "@/api/api";
 import { ENDPOINTS } from "@/api/endpoints";
 import type { ApiResponse } from "@/types/api";
-import type { Recipe, RecipePayload } from "@/types/recipes";
+import type { RecipeItem } from "@/types/recipes";
 import { ApiAuthModes } from "@/types/enums";
 
 const useRecipesService = () => {
   const api = useAxiosApi(ApiAuthModes.Auth);
 
-  const list = async (): Promise<ApiResponse<Recipe[]>> => {
-    const res: AxiosResponse<ApiResponse<Recipe[]>> = await api.get(ENDPOINTS.RECIPES.LIST);
+  const list = async (): Promise<ApiResponse<RecipeItem[]>> => {
+    const res: AxiosResponse<ApiResponse<RecipeItem[]>> = await api.get(ENDPOINTS.RECIPES.LIST);
     return res.data;
   };
 
-  const detail = async (id: string): Promise<ApiResponse<Recipe>> => {
-    const res: AxiosResponse<ApiResponse<Recipe>> = await api.get(ENDPOINTS.RECIPES.DETAIL(id));
+  const detail = async (id: string): Promise<ApiResponse<RecipeItem>> => {
+    const res: AxiosResponse<ApiResponse<RecipeItem>> = await api.get(ENDPOINTS.RECIPES.DETAIL(id));
     return res.data;
   };
 
-  const listFavorites = async (): Promise<ApiResponse<Recipe[]>> => {
-    const res: AxiosResponse<ApiResponse<Recipe[]>> = await api.get(ENDPOINTS.RECIPES.FAVORITES);
+  const listFavorites = async (): Promise<ApiResponse<RecipeItem[]>> => {
+    const res: AxiosResponse<ApiResponse<RecipeItem[]>> = await api.get(ENDPOINTS.RECIPES.FAVORITES);
     return res.data;
   };
 

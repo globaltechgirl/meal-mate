@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import useApiService from "@/services/api";
+import { useAxiosApi } from "@/api/api";
 import type { ShoppingItem } from "@/types/shoppingitems";
+import { ApiAuthModes } from "@/types/enums";
 
 const useShoppingItems = () => {
-  const api = useApiService();
+  const api = useAxiosApi(ApiAuthModes.BearerToken); 
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
