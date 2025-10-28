@@ -34,10 +34,10 @@ const DetailsInfo: FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [isEditingDate, setIsEditingDate] = useState(false);
-  const [isEditingTime, setIsEditingTime] = useState(false);
+  // const [isEditingName, setIsEditingName] = useState(false);
+  // const [isEditingDescription, setIsEditingDescription] = useState(false);
+  // const [isEditingDate, setIsEditingDate] = useState(false);
+  // const [isEditingTime, setIsEditingTime] = useState(false);
   const [serves, setServes] = useState(2);
 
   // ✅ Fetch recipe details
@@ -241,13 +241,13 @@ const DetailsInfo: FC = () => {
     },
   };
 
-  const editableInputStyle: React.CSSProperties = {
-    background: "transparent",
-    border: "none",
-    outline: "none",
-    color: "var(--light-200)",
-    fontSize: 9.5,
-  };
+  // const editableInputStyle: React.CSSProperties = {
+  //   background: "transparent",
+  //   border: "none",
+  //   outline: "none",
+  //   color: "var(--light-200)",
+  //   fontSize: 9.5,
+  // };
 
   return (
     <Box style={styles.contentWrapper}>
@@ -289,7 +289,7 @@ const DetailsInfo: FC = () => {
           <Box style={styles.detailsBox}>
             <Text
               style={styles.recipeName}
-              onClick={() => setIsEditingName(true)}
+              // onClick={() => setIsEditingName(true)}
             >
               {recipe.title}
             </Text>

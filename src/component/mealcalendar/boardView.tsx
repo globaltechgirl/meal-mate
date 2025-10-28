@@ -19,10 +19,10 @@ import MenuIcon from "@/assets/icons/menu";
 import TagIcon from "@/assets/icons/tag";
 
 import BestImg1 from "@/assets/best-img1.jpg";
-import BestImg2 from "@/assets/best-img2.jpg";
-import BestImg3 from "@/assets/best-img3.jpg";
-import BestImg4 from "@/assets/best-img4.jpg";
-import BestImg5 from "@/assets/best-img5.jpg";
+// import BestImg2 from "@/assets/best-img2.jpg";
+// import BestImg3 from "@/assets/best-img3.jpg";
+// import BestImg4 from "@/assets/best-img4.jpg";
+// import BestImg5 from "@/assets/best-img5.jpg";
 
 import AddMealModal from "./addMeal";
 

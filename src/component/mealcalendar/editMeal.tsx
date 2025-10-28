@@ -177,7 +177,7 @@ const EditMealModal: FC<EditMealModalProps> = ({ opened, onClose, meal }) => {
   useEffect(() => {
     if (!meal) return;
 
-    setStatus(meal.status);
+    // setStatus(meal.status);
     setMealType(meal.type);
     setFoodName(meal.name);
     setFoodNote(meal.note);

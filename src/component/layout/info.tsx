@@ -3,8 +3,8 @@ import { Box, Text, Avatar } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 import SearchIcon from "@/assets/icons/search";
-import SunIcon from "@/assets/icons/sun";
-import MoonIcon from "@/assets/icons/moon";
+// import SunIcon from "@/assets/icons/sun";
+// import MoonIcon from "@/assets/icons/moon";
 
 interface IconCircleProps {
   children: React.ReactNode;
