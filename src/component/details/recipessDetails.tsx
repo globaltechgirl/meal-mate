@@ -2,7 +2,7 @@ import { type FC, type CSSProperties, type ReactNode } from "react";
 import { Box, Grid, Paper } from "@mantine/core";
 
 import Info from "@/component/layout/info";
-// import MainDetails from "./mainDetails";
+import MainDetails from "./mainDetails";
 
 interface CardProps {
   children: ReactNode;
@@ -48,7 +48,7 @@ const MealCalendars: FC = () => {
 
       <Grid gutter={10} m={0} style={styles.gridFullHeight}>
         <Grid.Col span={12} style={styles.columnFullHeight}>
-          {/* <Card><MainDetails /></Card> */}
+          <Card><MainDetails recipeId={0} /></Card> 
         </Grid.Col>
       </Grid>
     </Box>

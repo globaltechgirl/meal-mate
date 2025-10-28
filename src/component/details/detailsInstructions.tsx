@@ -106,15 +106,17 @@ const DetailsInstructions: FC = () => {
       textAlign: "center",
     },
     loadingText: {
-      color: "var(--light-200)",
-      fontSize: 10,
-      textAlign: "center",
+      textAlign: "center", 
+      color: "var(--light-200)", 
+      fontSize: 9.5, 
+      fontWeight: 400,
     },
     errorText: {
-      color: "red",
-      fontSize: 10,
-      textAlign: "center",
-    },
+      textAlign: "center", 
+      color: "var(--mild-500)", 
+      fontSize: 9.5, 
+      fontWeight: 400,
+    }
   };
 
   return (
@@ -127,9 +129,13 @@ const DetailsInstructions: FC = () => {
 
         <Box style={styles.detailsMain}>
           {loading ? (
-            <Text style={styles.loadingText}>Loading video...</Text>
+            <Text style={styles.loadingText}>
+              Loading video...
+            </Text>
           ) : error ? (
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorText}>
+              {error}
+            </Text>
           ) : youtubeLink ? (
             getYoutubeEmbedUrl(youtubeLink) ? (
               <iframe

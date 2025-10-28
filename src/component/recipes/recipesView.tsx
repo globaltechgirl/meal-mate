@@ -282,22 +282,48 @@ const RecipesView: FC<RecipesViewProps> = ({
         textDecoration: "underline",
         cursor: "pointer",
       },
+      loadingWrapper: {
+        width: "100%", 
+        backgroundColor: "var(--dark-30)",
+        borderRadius: 12,
+        border: "1px solid var(--dark-10)",
+        padding: 2,
+      },
+      loadingBox: {
+        background: "var(--dark-20)",
+        border: "1px solid var(--dark-10)",
+        borderRadius: 12,
+        padding: 10, 
+        width: "100%", 
+      },
+      loadingText: {
+        textAlign: "center", 
+        color: "var(--light-200)", 
+        fontSize: 9.5, 
+        fontWeight: 400,
+      },
+      errorText: {
+        textAlign: "center", 
+        color: "var(--mild-500)", 
+        fontSize: 9.5, 
+        fontWeight: 400,
+      }
     }),
     [isSmallScreen, isMediumScreen]
   );
 
   if (loading)
     return (
-      <Text style={{ textAlign: "center", color: "var(--light-200)", marginTop: 40 }}>
-        Loading recipes...
-      </Text>
+      <Box style={styles.loadingWrapper}>
+        <Box style={styles.loadingBox}><Text style={styles.loadingText}>Loading recipes...</Text></Box>
+      </Box>
     );
 
   if (error)
     return (
-      <Text style={{ textAlign: "center", color: "red", marginTop: 40 }}>
-        Error: {error}
-      </Text>
+      <Box style={styles.loadingWrapper}>
+        <Box style={styles.loadingBox}><Text style={styles.errorText}>{error}</Text></Box>
+      </Box>
     );
 
   return (

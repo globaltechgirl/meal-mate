@@ -1,132 +1,267 @@
-import { type FC, type CSSProperties, useEffect, useState } from "react";
-import { Box, Text } from "@mantine/core";
-import { useParams } from "react-router-dom";
+import { type FC, type CSSProperties, useState, useEffect, useCallback, memo } from "react";
+import { Box, Text, Popover } from "@mantine/core";
+import UtensilsIcon from "@/assets/icons/utensils";
+import CheckIcon from "@/assets/icons/check";
+import MenuIcon from "@/assets/icons/menu";
+
+const styles: Record<string, CSSProperties> = {
+  contentWrapper: {
+    display: "flex",
+    width: "100%",
+  },
+  detailsWrapper: {
+    flex: 1,
+    width: "50%",
+    backgroundColor: "var(--dark-20)",
+    borderRadius: 12,
+    border: "1px solid var(--dark-10)",
+    padding: 4,
+  },
+  detailsMain: {
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "var(--dark-30)",
+    borderRadius: 8,
+    border: "1px solid var(--dark-10)",
+    padding: 15,
+    gap: 20,
+    position: "relative",
+  },
+  detailsHeaderWrapper: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "4px 6px 6px 6px",
+  },
+  detailsHeader: {
+    fontSize: 10,
+    fontWeight: 450,
+    color: "var(--light-100)",
+  },
+  itemRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    position: "relative",
+  },
+  iconWrapper: {
+    position: "relative",
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    background: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    color: "var(--light-100)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+  },
+  dottedLine: {
+    position: "absolute" as const,
+    top: 32,
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: 2,
+    height: 20,
+    borderLeft: "1px dashed var(--dark-10)",
+    zIndex: 0,
+  },
+  text: {
+    fontSize: 10,
+    fontWeight: 400,
+    color: "var(--light-100)",
+  },
+  popoverItem: {
+    fontSize: 9,
+    fontWeight: 400,
+    color: "var(--light-100)",
+    padding: "4px 8px",
+    borderRadius: 4,
+    cursor: "pointer",
+    backgroundColor: "transparent",
+  },
+  loadingWrapper: {
+    width: "100%", 
+    backgroundColor: "var(--dark-20)",
+    borderRadius: 12,
+    border: "1px solid var(--dark-10)",
+    padding: 2,
+  },
+  loadingBox: {
+    background: "var(--dark-30)",
+    border: "1px solid var(--dark-10)",
+    borderRadius: 8,
+    padding: 10, 
+    width: "100%", 
+  },
+  loadingText: {
+    textAlign: "center", 
+    color: "var(--light-200)", 
+    fontSize: 9.5, 
+    fontWeight: 400,
+  },
+  errorText: {
+    textAlign: "center", 
+    color: "var(--mild-500)", 
+    fontSize: 9.5, 
+    fontWeight: 400,
+  }
+} as const;
 
 interface Ingredient {
-  ingredient: string;
+  name: string;
+  measure: string;
+  checked: boolean;
 }
 
-const DetailsIngredients: FC = () => {
-  const { id } = useParams<{ id: string }>();
+interface PopoverItemProps {
+  label: string;
+  onClick: () => void;
+}
+
+const PopoverItem: FC<PopoverItemProps> = memo(({ label, onClick }) => {
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.backgroundColor = "var(--dark-20)";
+  };
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.backgroundColor = "transparent";
+  };
+  return (
+    <Box
+      style={styles.popoverItem}
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {label}
+    </Box>
+  );
+});
+PopoverItem.displayName = "PopoverItem";
+
+const DetailsIngredientsMeasurements: FC = () => {
+  const [opened, setOpened] = useState(false);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const recipeId = window.location.pathname.split("/").pop(); // uses last segment of URL as id
 
   useEffect(() => {
     const fetchIngredients = async () => {
       try {
         setLoading(true);
-        setError(null);
-
-        const res = await fetch(`https://meal-mate-api-pd3x.onrender.com/api/recipes/${id}/`);
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.error || "Failed to fetch recipe ingredients");
-        }
-
+        const res = await fetch(`https://meal-mate-api-pd3x.onrender.com/api/recipes/${recipeId}/`);
+        if (!res.ok) throw new Error("Failed to fetch recipe data");
         const data = await res.json();
-        setIngredients(data.ingredients || []);
+
+        // expect data.ingredients as [{ingredient: "Flour", measure: "1 cup"}, ...]
+        if (data.ingredients && data.ingredients.length > 0) {
+          setIngredients(
+            data.ingredients.map((ing: any) => ({
+              name: ing.ingredient,
+              measure: ing.measure,
+              checked: false,
+            }))
+          );
+        } else {
+          setIngredients([]);
+        }
       } catch (err: any) {
-        console.error("Error fetching ingredients:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) fetchIngredients();
-  }, [id]);
+    fetchIngredients();
+  }, [recipeId]);
 
-  if (loading)
-    return (
-      <Text
-        style={{
-          textAlign: "center",
-          color: "var(--light-200)",
-          marginTop: 40,
-          fontSize: 12,
-        }}
-      >
-        Loading ingredients...
-      </Text>
+  const toggleCheck = useCallback((index: number) => {
+    setIngredients(prev =>
+      prev.map((item, i) =>
+        i === index ? { ...item, checked: !item.checked } : item
+      )
     );
+    setSelectedIndex(index);
+  }, []);
 
-  if (error)
-    return (
-      <Text
-        style={{
-          textAlign: "center",
-          color: "red",
-          marginTop: 40,
-          fontSize: 12,
-        }}
-      >
-        {error}
-      </Text>
-    );
-
+  if (loading) return <Box style={styles.loadingWrapper}><Box style={styles.loadingBox}><Text style={styles.loadingText}>Loading ingredients...</Text></Box></Box>;
+  if (error) return <Box style={styles.loadingWrapper}><Box style={styles.loadingBox}><Text style={styles.errorText}>{error}</Text></Box></Box>;
   if (!ingredients.length)
-    return (
-      <Text
-        style={{
-          textAlign: "center",
-          color: "var(--light-200)",
-          marginTop: 40,
-          fontSize: 12,
-        }}
-      >
-        No ingredients found.
-      </Text>
-    );
-
-  const styles: Record<string, CSSProperties> = {
-    wrapper: {
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      backgroundColor: "var(--dark-20)",
-      borderRadius: 12,
-      border: "1px solid var(--dark-10)",
-      padding: 4,
-    },
-    innerBox: {
-      backgroundColor: "var(--dark-30)",
-      borderRadius: 8,
-      border: "1px solid var(--dark-10)",
-      padding: 15,
-      display: "flex",
-      flexDirection: "column",
-      gap: 8,
-    },
-    header: {
-      fontSize: 11,
-      fontWeight: 500,
-      color: "var(--light-100)",
-      marginBottom: 6,
-    },
-    ingredient: {
-      fontSize: 10,
-      fontWeight: 400,
-      color: "var(--light-200)",
-      borderBottom: "1px dashed var(--dark-10)",
-      paddingBottom: 6,
-      marginBottom: 6,
-    },
-  };
+    return <Text style={styles.loading}>No ingredients found.</Text>;
 
   return (
-    <Box style={styles.wrapper}>
-      <Box style={styles.innerBox}>
-        <Text style={styles.header}>Ingredients</Text>
+    <Box style={styles.contentWrapper}>
+      <Box style={styles.detailsWrapper}>
+        <Box style={styles.detailsHeaderWrapper}>
+          <Text style={styles.detailsHeader}>Ingredients & Measurements</Text>
 
-        {ingredients.map((item, index) => (
-          <Text key={index} style={styles.ingredient}>
-            {item.ingredient}
-          </Text>
-        ))}
+          <Popover
+            width={100}
+            position="bottom"
+            shadow="md"
+            opened={opened}
+            onClose={() => setOpened(false)}
+          >
+            <Popover.Target>
+              <Box style={{ cursor: "pointer" }} onClick={() => setOpened(o => !o)}>
+                <MenuIcon width={10} height={10} color="var(--light-100)" />
+              </Box>
+            </Popover.Target>
+
+            <Popover.Dropdown
+              style={{
+                width: 60,
+                padding: 2,
+                backgroundColor: "var(--dark-30)",
+                border: "1px solid var(--dark-10)",
+                borderRadius: 6,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                marginLeft: "-20px",
+                marginTop: "-2px",
+              }}
+            >
+              <PopoverItem label="Check All" onClick={() => setIngredients(prev => prev.map(i => ({ ...i, checked: true })))} />
+              <PopoverItem label="Uncheck All" onClick={() => setIngredients(prev => prev.map(i => ({ ...i, checked: false })))} />
+            </Popover.Dropdown>
+          </Popover>
+        </Box>
+
+        <Box style={styles.detailsMain}>
+          {ingredients.map((item, index) => (
+            <Box key={`${item.name}-${index}`} style={styles.itemRow}>
+              <Box
+                style={{
+                  ...styles.iconWrapper,
+                  borderColor:
+                    selectedIndex === index
+                      ? "var(--light-100)"
+                      : "var(--dark-10)",
+                }}
+                onClick={() => toggleCheck(index)}
+              >
+                {item.checked ? (
+                  <CheckIcon width={14} height={14} />
+                ) : (
+                  <UtensilsIcon width={14} height={14} />
+                )}
+                {index < ingredients.length - 1 && <Box style={styles.dottedLine} />}
+              </Box>
+
+              <Text style={styles.text}>
+                {item.name} — <span style={{ color: "var(--light-200)" }}>{item.measure}</span>
+              </Text>
+            </Box>
+          ))}
+        </Box>
       </Box>
     </Box>
   );
 };
 
-export default DetailsIngredients;
+export default DetailsIngredientsMeasurements;

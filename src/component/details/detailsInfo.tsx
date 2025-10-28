@@ -70,26 +70,42 @@ const DetailsInfo: FC = () => {
 
   if (loading)
     return (
-      <Text
-        style={{
-          textAlign: "center",
-          color: "var(--light-200)",
-          marginTop: 40,
-          fontSize: 12,
-        }}
-      >
-        Loading recipe details...
-      </Text>
+      <Box style={{
+        width: "100%", 
+        backgroundColor: "var(--dark-20)",
+        borderRadius: 12,
+        border: "1px solid var(--dark-10)",
+        padding: 2,
+      }}>
+        <Box style={{
+          background: "var(--dark-30)",
+          border: "1px solid var(--dark-10)",
+          borderRadius: 8,
+          padding: 10, 
+          width: "100%", 
+        }}>
+          <Text
+            style={{
+              textAlign: "center", 
+              color: "var(--light-200)", 
+              fontSize: 9.5, 
+              fontWeight: 400,
+            }}
+          >
+            Loading recipe details...
+          </Text>
+        </Box>
+      </Box>
     );
 
   if (error)
     return (
       <Text
         style={{
-          textAlign: "center",
-          color: "red",
-          marginTop: 40,
-          fontSize: 12,
+          textAlign: "center", 
+          color: "var(--mild-500)", 
+          fontSize: 10, 
+          fontWeight: 400,
         }}
       >
         {error}
