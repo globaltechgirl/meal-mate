@@ -201,7 +201,7 @@ const Create: FC = () => {
     <Box style={styles.container}>
       <Box style={styles.header}>
         <FrameLogo3 width={30} height={30} />
-        <Text style={styles.poweredBy}>Powered by FifthLab</Text>
+        <Text style={styles.poweredBy}>Powered by OUC</Text>
       </Box>
 
       <Box style={styles.main}>
