@@ -49,7 +49,7 @@ const Info: FC = () => {
       if (!token) return;
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/accounts/me/", {
+        const res = await fetch("https://meal-mate-api-pd3x.onrender.com/api/accounts/me/", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -266,7 +266,7 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
 
     const fetchMeals = useCallback(async () => {
       try {
-        const { data } = await axios.get("http://127.0.0.1:8000/api/meal-calendar/");
+        const { data } = await axios.get("https://meal-mate-api-pd3x.onrender.com/api/meal-calendar/");
 
         const grouped: Record<string, MealItem[]> = {};
         data.forEach((meal: any) => {
@@ -330,7 +330,7 @@ const BoardView = forwardRef<BoardViewHandle, BoardViewProps>(
 
     const handleDelete = useCallback(async (mealId: number, day: string) => {
       try {
-        await axios.delete(`http://127.0.0.1:8000/api/meal-calendar/${mealId}/`);
+        await axios.delete(`https://meal-mate-api-pd3x.onrender.com/api/meal-calendar/${mealId}/`);
         setColumns((prev) =>
           prev.map((col) =>
             col.day === day

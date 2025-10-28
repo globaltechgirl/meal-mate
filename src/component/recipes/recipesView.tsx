@@ -96,7 +96,7 @@ const RecipesView: FC<RecipesViewProps> = ({
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/recipes/`);
+        const res = await fetch(`https://meal-mate-api-pd3x.onrender.com/api/recipes/`);
         if (!res.ok) throw new Error("Failed to fetch recipes");
         const data = await res.json();
 
@@ -135,7 +135,7 @@ const RecipesView: FC<RecipesViewProps> = ({
     try {
       setAddingId(recipe.id);
 
-      const res = await fetch(`http://127.0.0.1:8000/api/meal-calendar/`, {
+      const res = await fetch(`https://meal-mate-api-pd3x.onrender.com/api/meal-calendar/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

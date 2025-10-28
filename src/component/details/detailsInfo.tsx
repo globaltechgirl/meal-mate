@@ -47,8 +47,8 @@ const DetailsInfo: FC = () => {
         setLoading(true);
         setError(null);
 
-        // ⚙️ Ensure BASE_URL is correct (e.g., http://127.0.0.1:8000/api)
-        const res = await fetch(`http://127.0.0.1:8000/api/recipes/${id}/`);
+        // ⚙️ Ensure BASE_URL is correct (e.g., https://meal-mate-api-pd3x.onrender.com/api)
+        const res = await fetch(`https://meal-mate-api-pd3x.onrender.com/api/recipes/${id}/`);
 
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));

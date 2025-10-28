@@ -139,7 +139,7 @@ const DetailsIngredientsMeasurements: FC = () => {
     const fetchIngredients = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://127.0.0.1:8000/api/recipes/${recipeId}/`);
+        const res = await fetch(`https://meal-mate-api-pd3x.onrender.com/api/recipes/${recipeId}/`);
         if (!res.ok) throw new Error("Failed to fetch recipe data");
         const data = await res.json();
 

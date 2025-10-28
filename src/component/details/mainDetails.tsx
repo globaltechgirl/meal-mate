@@ -167,7 +167,7 @@ const MainDetails: FC<MainDetailsProps> = ({ recipeId }) => {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/recipes/add-to-category/",
+          "https://meal-mate-api-pd3x.onrender.com/api/recipes/add-to-category/",
           {
             method: "POST",
             headers: {
@@ -216,7 +216,7 @@ const MainDetails: FC<MainDetailsProps> = ({ recipeId }) => {
     setLoadingCalendar(true);
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/recipes/add-to-calendar/",
+        "https://meal-mate-api-pd3x.onrender.com/api/recipes/add-to-calendar/",
         {
           method: "POST",
           headers: {
