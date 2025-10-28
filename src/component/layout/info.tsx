@@ -1,6 +1,7 @@
 import { type FC, type CSSProperties, useState, useCallback, useEffect, type ChangeEvent } from "react";
 import { Box, Text, Avatar } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import SearchIcon from "@/assets/icons/search";
 import SunIcon from "@/assets/icons/sun";
@@ -41,6 +42,14 @@ const Info: FC = () => {
   const [fullName, setFullName] = useState("User");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
+
+  const [opened, setOpened] = useState(false);  
+  const navigate = useNavigate();
+
+  const handleViewProfile = useCallback(() => {
+    setOpened(false);
+    navigate("/profile");
+  }, [navigate]);
 
   // Fetch user info from API
   useEffect(() => {
@@ -221,7 +230,7 @@ const Info: FC = () => {
             </IconCircle>
 
             {!isSmallScreen && (
-              <IconCircle>
+              <IconCircle onClick={handleViewProfile}>
                 <Avatar radius="xl" size={20}>
                   {!profileImage && getInitials(fullName)}
                 </Avatar>
