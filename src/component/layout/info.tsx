@@ -3,8 +3,8 @@ import { Box, Text, Avatar } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 import SearchIcon from "@/assets/icons/search";
-// import SunIcon from "@/assets/icons/sun";
-// import MoonIcon from "@/assets/icons/moon";
+import SunIcon from "@/assets/icons/sun";
+import MoonIcon from "@/assets/icons/moon";
 
 interface IconCircleProps {
   children: React.ReactNode;
@@ -181,7 +181,43 @@ const Info: FC = () => {
             </Box>
 
             <IconCircle onClick={toggleTheme}>
-              <Box style={{ position: "relative", width: 12, height: 12 }} />
+              <Box style={{ position: "relative", width: 11, height: 11 }}>
+                {theme === "dark" ? (
+                  <>
+                    <MoonIcon
+                      width={11}
+                      height={11}
+                      color="var(--light-100)"
+                      className={animating ? "icon-out" : ""}
+                    />
+                    {animating && (
+                      <SunIcon
+                        width={11}
+                        height={11}
+                        color="var(--light-100)"
+                        className="icon-in"
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <SunIcon
+                      width={11}
+                      height={11}
+                      color="var(--light-100)"
+                      className={animating ? "icon-out" : ""}
+                    />
+                    {animating && (
+                      <MoonIcon
+                        width={11}
+                        height={11}
+                        color="var(--light-100)"
+                        className="icon-in"
+                      />
+                    )}
+                  </>
+                )}
+              </Box>
             </IconCircle>
 
             {!isSmallScreen && (
